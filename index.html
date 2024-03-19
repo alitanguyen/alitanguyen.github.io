@@ -1,903 +1,907 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Cyclistic-bike-share-analysis</title><style>
-    /* cspell:disable-file */
-    /* webkit printing magic: print all background colors */
-    html {
-        -webkit-print-color-adjust: exact;
-    }
-    * {
-        box-sizing: border-box;
-        -webkit-print-color-adjust: exact;
-    }
-    
-    html,
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    @media only screen {
-        body {
-            margin: 2em auto;
-            max-width: 900px;
-            color: rgb(55, 53, 47);
-        }
-    }
-    
-    body {
-        line-height: 1.5;
-        white-space: pre-wrap;
-    }
-    
-    a,
-    a.visited {
-        color: inherit;
-        text-decoration: underline;
-    }
-    
-    .pdf-relative-link-path {
-        font-size: 80%;
-        color: #444;
-    }
-    
-    h1,
-    h2,
-    h3 {
-        letter-spacing: -0.01em;
-        line-height: 1.2;
-        font-weight: 600;
-        margin-bottom: 0;
-    }
-    
-    .page-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-top: 0;
-        margin-bottom: 0.75em;
-    }
-    
-    h1 {
-        font-size: 1.875rem;
-        margin-top: 1.875rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-        margin-top: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.25rem;
-        margin-top: 1.25rem;
-    }
-    
-    .source {
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        padding: 1.5em;
-        word-break: break-all;
-    }
-    
-    .callout {
-        border-radius: 3px;
-        padding: 1rem;
-    }
-    
-    figure {
-        margin: 1.25em 0;
-        page-break-inside: avoid;
-    }
-    
-    figcaption {
-        opacity: 0.5;
-        font-size: 85%;
-        margin-top: 0.5em;
-    }
-    
-    mark {
-        background-color: transparent;
-    }
-    
-    .indented {
-        padding-left: 1.5em;
-    }
-    
-    hr {
-        background: transparent;
-        display: block;
-        width: 100%;
-        height: 1px;
-        visibility: visible;
-        border: none;
-        border-bottom: 1px solid rgba(55, 53, 47, 0.09);
-    }
-    
-    img {
-        max-width: 100%;
-    }
-    
-    @media only print {
-        img {
-            max-height: 100vh;
-            object-fit: contain;
-        }
-    }
-    
-    @page {
-        margin: 1in;
-    }
-    
-    .collection-content {
-        font-size: 0.875rem;
-    }
-    
-    .column-list {
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .column {
-        padding: 0 1em;
-    }
-    
-    .column:first-child {
-        padding-left: 0;
-    }
-    
-    .column:last-child {
-        padding-right: 0;
-    }
-    
-    .table_of_contents-item {
-        display: block;
-        font-size: 0.875rem;
-        line-height: 1.3;
-        padding: 0.125rem;
-    }
-    
-    .table_of_contents-indent-1 {
-        margin-left: 1.5rem;
-    }
-    
-    .table_of_contents-indent-2 {
-        margin-left: 3rem;
-    }
-    
-    .table_of_contents-indent-3 {
-        margin-left: 4.5rem;
-    }
-    
-    .table_of_contents-link {
-        text-decoration: none;
-        opacity: 0.7;
-        border-bottom: 1px solid rgba(55, 53, 47, 0.18);
-    }
-    
-    table,
-    th,
-    td {
-        border: 1px solid rgba(55, 53, 47, 0.09);
-        border-collapse: collapse;
-    }
-    
-    table {
-        border-left: none;
-        border-right: none;
-    }
-    
-    th,
-    td {
-        font-weight: normal;
-        padding: 0.25em 0.5em;
-        line-height: 1.5;
-        min-height: 1.5em;
-        text-align: left;
-    }
-    
-    th {
-        color: rgba(55, 53, 47, 0.6);
-    }
-    
-    ol,
-    ul {
-        margin: 0;
-        margin-block-start: 0.6em;
-        margin-block-end: 0.6em;
-    }
-    
-    li > ol:first-child,
-    li > ul:first-child {
-        margin-block-start: 0.6em;
-    }
-    
-    ul > li {
-        list-style: disc;
-    }
-    
-    ul.to-do-list {
-        padding-inline-start: 0;
-    }
-    
-    ul.to-do-list > li {
-        list-style: none;
-    }
-    
-    .to-do-children-checked {
-        text-decoration: line-through;
-        opacity: 0.375;
-    }
-    
-    ul.toggle > li {
-        list-style: none;
-    }
-    
-    ul {
-        padding-inline-start: 1.7em;
-    }
-    
-    ul > li {
-        padding-left: 0.1em;
-    }
-    
-    ol {
-        padding-inline-start: 1.6em;
-    }
-    
-    ol > li {
-        padding-left: 0.2em;
-    }
-    
-    .mono ol {
-        padding-inline-start: 2em;
-    }
-    
-    .mono ol > li {
-        text-indent: -0.4em;
-    }
-    
-    .toggle {
-        padding-inline-start: 0em;
-        list-style-type: none;
-    }
-    
-    /* Indent toggle children */
-    .toggle > li > details {
-        padding-left: 1.7em;
-    }
-    
-    .toggle > li > details > summary {
-        margin-left: -1.1em;
-    }
-    
-    .selected-value {
-        display: inline-block;
-        padding: 0 0.5em;
-        background: rgba(206, 205, 202, 0.5);
-        border-radius: 3px;
-        margin-right: 0.5em;
-        margin-top: 0.3em;
-        margin-bottom: 0.3em;
-        white-space: nowrap;
-    }
-    
-    .collection-title {
-        display: inline-block;
-        margin-right: 1em;
-    }
-    
-    .page-description {
-        margin-bottom: 2em;
-    }
-    
-    .simple-table {
-        margin-top: 1em;
-        font-size: 0.875rem;
-        empty-cells: show;
-    }
-    .simple-table td {
-        height: 29px;
-        min-width: 120px;
-    }
-    
-    .simple-table th {
-        height: 29px;
-        min-width: 120px;
-    }
-    
-    .simple-table-header-color {
-        background: rgb(247, 246, 243);
-        color: black;
-    }
-    .simple-table-header {
-        font-weight: 500;
-    }
-    
-    time {
-        opacity: 0.5;
-    }
-    
-    .icon {
-        display: inline-block;
-        max-width: 1.2em;
-        max-height: 1.2em;
-        text-decoration: none;
-        vertical-align: text-bottom;
-        margin-right: 0.5em;
-    }
-    
-    img.icon {
-        border-radius: 3px;
-    }
-    
-    .user-icon {
-        width: 1.5em;
-        height: 1.5em;
-        border-radius: 100%;
-        margin-right: 0.5rem;
-    }
-    
-    .user-icon-inner {
-        font-size: 0.8em;
-    }
-    
-    .text-icon {
-        border: 1px solid #000;
-        text-align: center;
-    }
-    
-    .page-cover-image {
-        display: block;
-        object-fit: cover;
-        width: 100%;
-        max-height: 30vh;
-    }
-    
-    .page-header-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-    
-    .page-header-icon-with-cover {
-        margin-top: -0.72em;
-        margin-left: 0.07em;
-    }
-    
-    .page-header-icon img {
-        border-radius: 3px;
-    }
-    
-    .link-to-page {
-        margin: 1em 0;
-        padding: 0;
-        border: none;
-        font-weight: 500;
-    }
-    
-    p > .user {
-        opacity: 0.5;
-    }
-    
-    td > .user,
-    td > time {
-        white-space: nowrap;
-    }
-    
-    input[type="checkbox"] {
-        transform: scale(1.5);
-        margin-right: 0.6em;
-        vertical-align: middle;
-    }
-    
-    p {
-        margin-top: 0.5em;
-        margin-bottom: 0.5em;
-    }
-    
-    .image {
-        border: none;
-        margin: 1.5em 0;
-        padding: 0;
-        border-radius: 0;
-        text-align: center;
-    }
-    
-    .code,
-    code {
-        background: rgba(135, 131, 120, 0.15);
-        border-radius: 3px;
-        padding: 0.2em 0.4em;
-        border-radius: 3px;
-        font-size: 85%;
-        tab-size: 2;
-    }
-    
-    code {
-        color: #eb5757;
-    }
-    
-    .code {
-        padding: 1.5em 1em;
-    }
-    
-    .code-wrap {
-        white-space: pre-wrap;
-        word-break: break-all;
-    }
-    
-    .code > code {
-        background: none;
-        padding: 0;
-        font-size: 100%;
-        color: inherit;
-    }
-    
-    blockquote {
-        font-size: 1.25em;
-        margin: 1em 0;
-        padding-left: 1em;
-        border-left: 3px solid rgb(55, 53, 47);
-    }
-    
-    .bookmark {
-        text-decoration: none;
-        max-height: 8em;
-        padding: 0;
-        display: flex;
-        width: 100%;
-        align-items: stretch;
-    }
-    
-    .bookmark-title {
-        font-size: 0.85em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        height: 1.75em;
-        white-space: nowrap;
-    }
-    
-    .bookmark-text {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .bookmark-info {
-        flex: 4 1 180px;
-        padding: 12px 14px 14px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-    
-    .bookmark-image {
-        width: 33%;
-        flex: 1 1 180px;
-        display: block;
-        position: relative;
-        object-fit: cover;
-        border-radius: 1px;
-    }
-    
-    .bookmark-description {
-        color: rgba(55, 53, 47, 0.6);
-        font-size: 0.75em;
-        overflow: hidden;
-        max-height: 4.5em;
-        word-break: break-word;
-    }
-    
-    .bookmark-href {
-        font-size: 0.75em;
-        margin-top: 0.25em;
-    }
-    
-    .sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
-    .code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
-    .serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
-    .mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
-    .pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
-    .pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
-    .pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
-    .pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
-    .pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
-    .pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
-    .pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
-    .pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
-    .pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
-    .pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
-    .pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
-    .pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
-    .pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
-    .pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
-    .pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
-    .pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
-    .highlight-default {
-        color: rgba(55, 53, 47, 1);
-    }
-    .highlight-gray {
-        color: rgba(120, 119, 116, 1);
-        fill: rgba(120, 119, 116, 1);
-    }
-    .highlight-brown {
-        color: rgba(159, 107, 83, 1);
-        fill: rgba(159, 107, 83, 1);
-    }
-    .highlight-orange {
-        color: rgba(217, 115, 13, 1);
-        fill: rgba(217, 115, 13, 1);
-    }
-    .highlight-yellow {
-        color: rgba(203, 145, 47, 1);
-        fill: rgba(203, 145, 47, 1);
-    }
-    .highlight-teal {
-        color: rgba(68, 131, 97, 1);
-        fill: rgba(68, 131, 97, 1);
-    }
-    .highlight-blue {
-        color: rgba(51, 126, 169, 1);
-        fill: rgba(51, 126, 169, 1);
-    }
-    .highlight-purple {
-        color: rgba(144, 101, 176, 1);
-        fill: rgba(144, 101, 176, 1);
-    }
-    .highlight-pink {
-        color: rgba(193, 76, 138, 1);
-        fill: rgba(193, 76, 138, 1);
-    }
-    .highlight-red {
-        color: rgba(212, 76, 71, 1);
-        fill: rgba(212, 76, 71, 1);
-    }
-    .highlight-gray_background {
-        background: rgba(241, 241, 239, 1);
-    }
-    .highlight-brown_background {
-        background: rgba(244, 238, 238, 1);
-    }
-    .highlight-orange_background {
-        background: rgba(251, 236, 221, 1);
-    }
-    .highlight-yellow_background {
-        background: rgba(251, 243, 219, 1);
-    }
-    .highlight-teal_background {
-        background: rgba(237, 243, 236, 1);
-    }
-    .highlight-blue_background {
-        background: rgba(231, 243, 248, 1);
-    }
-    .highlight-purple_background {
-        background: rgba(244, 240, 247, 0.8);
-    }
-    .highlight-pink_background {
-        background: rgba(249, 238, 243, 0.8);
-    }
-    .highlight-red_background {
-        background: rgba(253, 235, 236, 1);
-    }
-    .block-color-default {
-        color: inherit;
-        fill: inherit;
-    }
-    .block-color-gray {
-        color: rgba(120, 119, 116, 1);
-        fill: rgba(120, 119, 116, 1);
-    }
-    .block-color-brown {
-        color: rgba(159, 107, 83, 1);
-        fill: rgba(159, 107, 83, 1);
-    }
-    .block-color-orange {
-        color: rgba(217, 115, 13, 1);
-        fill: rgba(217, 115, 13, 1);
-    }
-    .block-color-yellow {
-        color: rgba(203, 145, 47, 1);
-        fill: rgba(203, 145, 47, 1);
-    }
-    .block-color-teal {
-        color: rgba(68, 131, 97, 1);
-        fill: rgba(68, 131, 97, 1);
-    }
-    .block-color-blue {
-        color: rgba(51, 126, 169, 1);
-        fill: rgba(51, 126, 169, 1);
-    }
-    .block-color-purple {
-        color: rgba(144, 101, 176, 1);
-        fill: rgba(144, 101, 176, 1);
-    }
-    .block-color-pink {
-        color: rgba(193, 76, 138, 1);
-        fill: rgba(193, 76, 138, 1);
-    }
-    .block-color-red {
-        color: rgba(212, 76, 71, 1);
-        fill: rgba(212, 76, 71, 1);
-    }
-    .block-color-gray_background {
-        background: rgba(241, 241, 239, 1);
-    }
-    .block-color-brown_background {
-        background: rgba(244, 238, 238, 1);
-    }
-    .block-color-orange_background {
-        background: rgba(251, 236, 221, 1);
-    }
-    .block-color-yellow_background {
-        background: rgba(251, 243, 219, 1);
-    }
-    .block-color-teal_background {
-        background: rgba(237, 243, 236, 1);
-    }
-    .block-color-blue_background {
-        background: rgba(231, 243, 248, 1);
-    }
-    .block-color-purple_background {
-        background: rgba(244, 240, 247, 0.8);
-    }
-    .block-color-pink_background {
-        background: rgba(249, 238, 243, 0.8);
-    }
-    .block-color-red_background {
-        background: rgba(253, 235, 236, 1);
-    }
-    .select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
-    .select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
-    .select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
-    .select-value-color-green { background-color: rgba(219, 237, 219, 1); }
-    .select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
-    .select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
-    .select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
-    .select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
-    .select-value-color-red { background-color: rgba(255, 226, 221, 1); }
-    .select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
-    .select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
-    .select-value-color-pageGlass { background-color: undefined; }
-    .select-value-color-washGlass { background-color: undefined; }
-    
-    .checkbox {
-        display: inline-flex;
-        vertical-align: text-bottom;
-        width: 16;
-        height: 16;
-        background-size: 16px;
-        margin-left: 2px;
-        margin-right: 5px;
-    }
-    
-    .checkbox-on {
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
-    }
-    
-    .checkbox-off {
-        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
-    }
-        
-    </style></head><body><article id="46446da2-df76-44d0-afd7-6175312f5919" class="page sans"><header><img class="page-cover-image" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/dataset-cover.jpg" style="object-position:center 50%"/><h1 class="page-title">Cyclistic-bike-share-analysis</h1><p class="page-description"></p></header><div class="page-body"><p id="d9a703f2-f1b4-4c3d-94bd-6e8423d70075" class="">This capstone project is the final part of the <a href="https://www.coursera.org/professional-certificates/google-data-analytics">Google Data Analytics Certificate</a> on Cousera. The main objective of this project is for me to demonstrate the skills acquired throughout the course and apply them to real-world scenarios. As a junior data analyst within the marketing analyst team of Cyclistic, a fictional bike-share company, I will go through 6 phases of the data analysis process in this project including <strong>Ask, Prepare, Process, Analyze and Act. </strong><br/><br/></p><nav id="1a8a5b63-f83b-4421-aa83-4697076a3221" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#0b87e668-3e9b-4c4c-8130-f4c4c2347405"><strong>STEP 1: ASK</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#bee4c0b0-53ae-4b44-bb3e-bc8f203090f8"><strong>1.1 Background </strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3739e539-89f5-41c2-87f5-6939e842f1e9"><strong>1.2 Business Task</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b5aee8e4-0438-4ff3-b3f9-cdf1fae367d2"><strong>1.3 Deliverables</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c514ce03-202c-44b0-8431-be6395f698cc"><strong>1.4 Key Stakeholders</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#58690241-d372-49d7-bf8e-70cd0b2ae5fd"><strong>STEP 2: PREPARE</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#8673e604-6828-47a1-a511-a75ad71bb569"><strong>STEP 3: PROCESS</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#40ae6ab6-93cd-4133-a447-122b2a18d09b"><strong>3.1. Choosing the tool </strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#6d8d1d3c-c35f-40a1-8a5d-6fd18e0dd824"><strong>3.2. Preparing the environment </strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#9ad7cce4-95ee-4fb7-a6f1-f29b1e288fa8"><strong>3.3 Data cleaning and manipulation </strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e37d6cd0-1d6e-4db5-8e3f-e40a9231462b"><strong>STEP 4: ANALYZE</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#7290d42d-7eee-45c9-b2c2-c285c73c3497"><strong>4.1 Run calculations</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1630705b-0a6e-4a0d-bc31-e3321e17c7b1"><strong>STEP 5: SHARE</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5bfe8be8-f9cb-4599-beb9-a6a0c6be6cd4"><strong>STEP 6: ACT </strong></a></div></nav><h2 id="0b87e668-3e9b-4c4c-8130-f4c4c2347405" class=""><strong>STEP 1: ASK</strong></h2><h3 id="bee4c0b0-53ae-4b44-bb3e-bc8f203090f8" class=""><strong>1.1 Background </strong></h3><p id="5a68ef66-e3b3-4d28-a9fb-00b51edd0fab" class="">In 2016, Cyclistic launched a successful bike-share offering. Since then, the program has grown to a  fleet of 5,824 bicycles that are geotracked and locked into a network of 692 stations across Chicago. The bikes can be unlocked from one station and returned to any other station in the system anytime.</p><p id="d3e3d21a-0815-427a-a458-221efdba4701" class="">The director of marketing, Lily Moreno, believes the company’s future success depends on maximizing the number of annual memberships. Moreno believes that targeting casual riders are the key because they are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs. Therefore, our team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, we will design a new marketing strategy to convert casual riders into annual members. </p><h3 id="3739e539-89f5-41c2-87f5-6939e842f1e9" class=""><strong>1.2 Business Task</strong></h3><p id="70eebbce-d31f-42a5-aebc-1e1cf3bc6ff7" class="">How do annual members and casual riders use Cyclistic bikes differently?. </p><h3 id="b5aee8e4-0438-4ff3-b3f9-cdf1fae367d2" class=""><strong>1.3 Deliverables</strong></h3><ol type="1" id="e0a2ff73-a402-44b6-9654-ced912866f53" class="numbered-list" start="1"><li>A clear summary of the business task</li></ol><ol type="1" id="edf54612-a645-47f5-972d-d06434f8a526" class="numbered-list" start="2"><li>A description of all data sources used</li></ol><ol type="1" id="b4f91b8d-0e11-40d0-846e-fca728257ec4" class="numbered-list" start="3"><li>Documentation of any cleaning or manipulation of data</li></ol><ol type="1" id="569d0624-69a8-4a2f-9641-6dbf274594a3" class="numbered-list" start="4"><li>A summary of analysis</li></ol><ol type="1" id="13e6a880-75d4-4cdd-acf8-634652c00f71" class="numbered-list" start="5"><li>Supporting visualizations and key findings</li></ol><ol type="1" id="8855485e-5b7d-4e54-84c5-24c685987c40" class="numbered-list" start="6"><li>Top three recommendations based on the analysis</li></ol><h3 id="c514ce03-202c-44b0-8431-be6395f698cc" class=""><strong>1.4 Key Stakeholders</strong></h3><ol type="1" id="7c4ae4d0-613b-40e3-b8c2-73c70f8a46b5" class="numbered-list" start="1"><li>Lily Moreno: Director of marketing and my manager who is responsible for the development of campaigns and initiatives to promote the bike-share program.</li></ol><ol type="1" id="31b55d68-db2d-4ffa-a6db-08ae5826489a" class="numbered-list" start="2"><li>Cyclistic marketing analytics team: A team of data analysts who are responsible for collecting, analyzing, and reporting data.</li></ol><ol type="1" id="9ae8f0a0-d181-47bb-b6d2-905b07ea593b" class="numbered-list" start="3"><li>Cyclistic executive team: Detail-oriented executive team will decide whether to approve the recommended marketing program.</li></ol><p id="0ba8d3f3-fb26-44be-8116-7dc92070cd46" class="">
-    </p><h2 id="58690241-d372-49d7-bf8e-70cd0b2ae5fd" class=""><strong>STEP 2: PREPARE</strong></h2><ol type="1" id="fa7dfd05-890b-4506-b300-2fd8da2e8fe7" class="numbered-list" start="1"><li>The data is publicly available <a href="https://divvy-tripdata.s3.amazonaws.com/index.html"><strong>here</strong></a><strong> </strong>under the<strong> </strong><a href="https://ride.divvybikes.com/data-license-agreement"><strong>license</strong></a><strong> </strong>by Motivate International Inc. It is stored in .csv files. </li></ol><ol type="1" id="a470c612-e75e-4861-b6ac-b2bd5e87b6af" class="numbered-list" start="2"><li>I downloaded the last 12 months of Cyclistic trip data from February 2023 to January 2024 for this project. </li></ol><ol type="1" id="1ab14132-2913-4bbc-b90b-4a7159fb37bf" class="numbered-list" start="3"><li>The data meets the criteria for ROCCC: <strong>R</strong>eliable, <strong>O</strong>riginal, <strong>C</strong>omprehensive, <strong>C</strong>urrent, and <strong>C</strong>ited and there are no issues with bias or credibility. </li></ol><p id="0d306083-96e2-4f5f-8057-04be9f0e2ba5" class="">
-    </p><h2 id="8673e604-6828-47a1-a511-a75ad71bb569" class=""><strong>STEP 3: PROCESS</strong></h2><h3 id="40ae6ab6-93cd-4133-a447-122b2a18d09b" class=""><strong>3.1. Choosing the tool </strong></h3><p id="4210a4d5-d11a-47c0-b06f-19f2f570059c" class="">I used R Studio to process the data.</p><p id="c421b356-44eb-440c-ba62-b216e07d4a4f" class="">I also found out that I could not use Excel spreadsheet or Google spreadsheet to process a dataset of <strong>5,674,449</strong> rows after combing all .csv files together. Because Excel spreadsheet has a limit of 1,048,576 rows and 16,384 columns while Google spreadsheet can only process maximum 18,278 columns and 40,000 rows. </p><h3 id="6d8d1d3c-c35f-40a1-8a5d-6fd18e0dd824" class=""><strong>3.2. Preparing the environment </strong></h3><ol type="1" id="f977e694-4dc4-4b52-8cf1-63ddda986284" class="numbered-list" start="1"><li>Loaded needed libraries: tidyverse, lubridate, ggplot2. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="f30831bb-a2f2-4e1c-9955-bbb0d2bff31b" class="code"><code class="language-R">library(tidyverse)
-    library(lubridate)
-    library(ggplot2)</code></pre><ol type="1" id="480e38cd-8fac-4e69-8dbf-847b322c2467" class="numbered-list" start="2"><li>Set my working directory and imported 12 .csv files to the environment then assigned each monthly .csv file to its own variable. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="20970c80-6fc3-4c79-b45f-af744032f03b" class="code"><code class="language-R">setwd(&#x27;/Users/9360/Desktop/Data Analytics/Google_Data_Analytics/Capstone_Project/Data&#x27;)
-    Feb2023_df &lt;- read.csv(&quot;202302-divvy-tripdata.csv&quot;)
-    Mar2023_df &lt;- read.csv(&quot;202303-divvy-tripdata.csv&quot;)
-    Apr2023_df &lt;- read.csv(&quot;202304-divvy-tripdata.csv&quot;)
-    May2023_df &lt;- read.csv(&quot;202305-divvy-tripdata.csv&quot;)
-    Jun2023_df &lt;- read.csv(&quot;202306-divvy-tripdata.csv&quot;)
-    Jul2023_df &lt;- read.csv(&quot;202307-divvy-tripdata.csv&quot;)
-    Aug2023_df &lt;- read.csv(&quot;202308-divvy-tripdata.csv&quot;)
-    Sep2023_df &lt;- read.csv(&quot;202309-divvy-tripdata.csv&quot;)
-    Oct2023_df &lt;- read.csv(&quot;202310-divvy-tripdata.csv&quot;)
-    Nov2023_df &lt;- read.csv(&quot;202311-divvy-tripdata.csv&quot;)
-    Dec2023_df &lt;- read.csv(&quot;202312-divvy-tripdata.csv&quot;)
-    Jan2024_df &lt;- read.csv(&quot;202401-divvy-tripdata.csv&quot;)</code></pre><ol type="1" id="842ae078-1333-4924-bcc7-8aae8b11c4ae" class="numbered-list" start="3"><li>Merge all uploaded files into a new data frame named <code>merged_df</code>.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="820ddd7a-a568-4937-aa46-96c625d94a08" class="code"><code class="language-R">merged_df &lt;- rbind(Feb2023_df, Mar2023_df, Apr2023_df, May2023_df, Jun2023_df, Jul2023_df, Aug2023_df, Sep2023_df, Oct2023_df, Nov2023_df, Dec2023_df, Jan2024_df)</code></pre><ol type="1" id="8ffc45f7-b4e7-4ca0-8b61-678df0691418" class="numbered-list" start="4"><li>Removed 12 .csv files to keep the environment organized.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="28c1f62f-36bc-41c1-acb0-2a3117f41514" class="code"><code class="language-R">rm(Feb2023_df, Mar2023_df, Apr2023_df, May2023_df, Jun2023_df, Jul2023_df, Aug2023_df, Sep2023_df, Oct2023_df, Nov2023_df, Dec2023_df, Jan2024_df)</code></pre><ol type="1" id="d61a0a12-16cb-4799-83ae-423211691cca" class="numbered-list" start="5"><li>Saved the data frame as <code>merged_data</code> and got an overview of it</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="ca3bd8ad-79b5-43a5-8f59-29ac74133228" class="code"><code class="language-R">merged_data &lt;- merged_df
-    glimpse(merged_data)</code></pre><p id="cbf4aee2-4292-45ee-961f-dd6b36bd1947" class="">There are <em>13 variables</em> and <em>5,674,449 observations</em> in total. </p><h3 id="9ad7cce4-95ee-4fb7-a6f1-f29b1e288fa8" class=""><strong>3.3 Data cleaning and manipulation </strong></h3><p id="a6458b02-40cb-4e50-a205-41f2c2a16386" class=""><strong>Data Cleaning </strong></p><p id="98d803d9-76ad-4246-9ac5-eb9e31e8e5ae" class="">The following data cleaning was performed: </p><ol type="1" id="8cba62f9-6111-4df6-8de6-1e814c3640fa" class="numbered-list" start="1"><li>Remove duplicate rows. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="683cdd48-853b-427e-8fd5-a9f39b51ad8b" class="code"><code class="language-R">merged_data &lt;- distinct(merged_data)</code></pre><ol type="1" id="aab43385-aa66-44fb-9557-802c8e25be7b" class="numbered-list" start="2"><li>Remove NA values. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a3e397a9-cf63-4974-a07c-e9e06be6744a" class="code"><code class="language-R">merged_data &lt;- na.omit(merged_data)</code></pre><ol type="1" id="cf2a789b-1cf3-46bb-99c6-4fc7eade26e0" class="numbered-list" start="3"><li>Remove rows that has white space or empty string. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="baf00e2b-72a5-4181-b761-9599f9cd3e0e" class="code"><code class="language-R">merged_data &lt;- merged_data[rowSums(sapply(merged_data, function(x) x == &quot;&quot;)) == 0, ]</code></pre><ol type="1" id="bd2bc852-95f6-4d23-90e8-9bc5b399489f" class="numbered-list" start="4"><li>Remove 7 unnecessary columns including ride_id, start_station_id, end_station_id, start_lat, start_lng, end_lat, end_lng.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a0e34916-b966-4c5a-ab12-28f5269302f4" class="code"><code class="language-R">merged_data &lt;- subset(merged_data, select = -c(ride_id, start_station_id, end_station_id, start_lat, start_lng, end_lat, end_lng))</code></pre><p id="f3775669-2c00-42db-8eb6-ede49261d4e0" class="">At the beginning, I encountered difficulties due to the presence of white spaces and empty strings in the data frame. It took me a while to revisit this step and clean the data more carefully. As a result, the total number of rows decreased by 24%, amounting to 1,370,067 rows. Despite the removal of nearly one fourth of the data, the data frame still contained 4 million rows, providing enough data for calculations and visualizations in the next step. </p><ol type="1" id="c43bea31-e628-40db-b253-16512cdaa73e" class="numbered-list" start="5"><li>Save the data frame as <code>cleaned_data</code> and get an overview of it.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="82512eb9-b160-4221-a6da-cdd78865742b" class="code"><code class="language-R">cleaned_data &lt;- merged_data
-    View(cleaned_data)</code></pre><p id="91318b78-69ac-4fcf-8d1c-2b75416e89e1" class=""><strong>Data Manipulation </strong></p><p id="f3a8b70d-0acc-477b-a315-27a6be2dabdf" class="">The following data manipulation was performed:</p><ol type="1" id="00294c0d-a7ae-48f1-97ec-de4e27a4467f" class="numbered-list" start="1"><li>Create new column <code>Ride_length</code> that calculates the length of each ride by subtracting <code>started_at</code> column from <code>ended_at</code> column and converts it into minutes.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="89f0d28c-f27d-49b1-b348-8ffe0ef2c554" class="code"><code class="language-R"># create the column
-    cleaned_data$ride_length &lt;- difftime(cleaned_data$ended_at, cleaned_data$started_at, units = &#x27;min&#x27;)
-    cleaned_data$ride_length &lt;- as.numeric(cleaned_data$ride_length) 
-    
-    # check the first 5 rows
-    head(cleaned_data, 5)</code></pre><p id="b12e9ae2-4ace-4373-b229-5d30d3e5b762" class="">
-    </p><ol type="1" id="d6a87fb0-840d-479e-a946-dc9737b3a1d0" class="numbered-list" start="2"><li>Create new column <code>Day_of_week</code> that extracts the day of the week from <code>started_at</code> column. It returns the day of the week in the form as ”Sunday”, “Monday”, etc. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="852737de-008e-4831-9d7a-2c4deb6fd442" class="code"><code class="language-R"># create the column
-    cleaned_data$day_of_week &lt;- wday(cleaned_data$started_at, label = TRUE, abbr = FALSE)
-    
-    # check the first 5 rows
-    head(cleaned_data, 5)</code></pre><ol type="1" id="fe14c6a5-0c89-42ea-a424-fcba499835b3" class="numbered-list" start="3"><li>Create new column <code>Month</code> that extracts the month from <code>started_at</code> column. It returns the month in each year, starting from 1, ending at 12. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25665766-d922-4923-baaa-4f43220cac16" class="code"><code class="language-R"># create the column
-    cleaned_data$month &lt;- format(as.Date(cleaned_data$started_at), &quot;%m&quot;)
-    
-    # create the column
-    cleaned_data$month &lt;- format(as.Date(cleaned_data$started_at), &quot;%m&quot;)</code></pre><ol type="1" id="a4c49a14-779e-400f-93c8-9f5b8bda2eaa" class="numbered-list" start="4"><li>Create new column <code>Day</code> that extracts the day from <code>started_at</code> column. It returns the day number in each month, starting from 1, ending at 31. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="99bd90f6-3ceb-4ef8-bc40-b095b7ec491d" class="code"><code class="language-R"># create the column
-    cleaned_data$day &lt;- format(as.Date(cleaned_data$started_at), &quot;%d&quot;)
-    
-    # check the first 5 rows
-    head(cleaned_data, 5)</code></pre><ol type="1" id="928d8fd5-cabe-44a3-b149-03a6e2357fc5" class="numbered-list" start="5"><li>Create new column <code>Hour</code> that extracts the hour from <code>started_at</code> column. It returns the hour of each day, starting from 0, ending at 23. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="bc4dacec-0ae8-4987-ba51-c814e480ea8b" class="code"><code class="language-R"># create the column
-    cleaned_data$hour &lt;- format(as.POSIXct(cleaned_data$started_at), format = &quot;%H&quot;)
-    
-    # check the first 5 rows
-    head(cleaned_data, 5)</code></pre><ol type="1" id="320b8adf-46d3-40c7-b9e3-ebd97e38eaf5" class="numbered-list" start="6"><li>Create new column <code>Round_trip</code> that identifies whether the route is one-way or round-trip by comparing the value of  <code>start_station_name</code> column and <code>end_station_name</code> column. If the start and end station names are the same, it indicates a round-trip route, and the value for the <code>Round_trip</code> column will be &#x27;Yes&#x27;. In contrast, if the start and end station names are different, it indicates a one-way route, and the value for the <code>Round_trip</code> column will be &#x27;No&#x27;.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="4b45354c-ec1e-4e12-9d4f-3c36dfadddff" class="code"><code class="language-R"># create the column
-    cleaned_data$round_trip &lt;- ifelse(cleaned_data$start_station_name == cleaned_data$end_station_name, &#x27;Yes&#x27;, &#x27;No&#x27;)
-    
-    # check the first 5 rows
-    head(cleaned_data, 5)</code></pre><p id="43f298db-257e-462b-b3cd-67ef6a0b7d3e" class="">
-    </p><p id="6c84355f-8dac-4d61-ab35-1b918bffb09d" class="">Once I viewed new data frame, I found out that there are some negative rows in <code>ride_length</code>  column. It means that the ending time is before the starting time which is not appropriate. Those rows should also be removed. </p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="07be799a-1e62-41ff-a48f-4dc80f4b1779" class="code"><code class="language-R">cleaned_data &lt;- cleaned_data %&gt;%
-      filter(ride_length &gt;= 0)  </code></pre><p id="c07f10e1-40ae-4302-9025-df42507808d3" class="">Saved the .csv file as <code>final_data</code>. </p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="99425da7-fe06-4382-a414-97b11b41cadc" class="code"><code class="language-R">final_data &lt;- cleaned_data</code></pre><p id="e29f25cd-7002-4c8d-b6f4-da4ce7377376" class="">This data frame had <strong>4,297,164 rows</strong> indicating the removal of 1,377,285 rows. </p><p id="c83971ab-e5ce-422e-b976-40d51bf30155" class="">Data cleaning and manipulation is completed. Data is now ready to be analyzed.  </p><p id="6cb24633-8579-418c-ab09-1b95c1214e07" class="">
-    </p><h2 id="e37d6cd0-1d6e-4db5-8e3f-e40a9231462b" class=""><strong>STEP 4: ANALYZE</strong></h2><h3 id="7290d42d-7eee-45c9-b2c2-c285c73c3497" class=""><strong>4.1 Run calculations</strong></h3><ol type="1" id="11596566-347a-4b12-a2fa-6ee34df40286" class="numbered-list" start="1"><li>Total number of rides and Average ride length.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="d8a624da-9544-4942-b22a-5eec5fcda5c5" class="code"><code class="language-R">final_data %&gt;%
-     summarize(total_rides = nrow(final_data),average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="88d610de-a1b4-48c1-8a53-e42acc5d6a9d" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled.png"><img style="width:504px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled.png"/></a></figure><ol type="1" id="f2bd8191-d5e7-4666-9d5a-7dd6f371e12b" class="numbered-list" start="2"><li>Total number of rides and Average ride length by User Type. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="8c6d6109-12ff-47f2-9f0f-cde7a18a4d7a" class="code"><code class="language-R">final_data %&gt;%
-    group_by(member_casual) %&gt;%
-    summarise(total_rides = length(member_casual),
-    percentage = round((length(member_casual) / nrow(final_data)) * 100, digits = 2),
-    average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="5db6009e-0ecd-4f88-831a-5ff088aec0f4" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%201.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%201.png"/></a></figure><ol type="1" id="03705060-cbfb-4cda-a01a-100613ece9d4" class="numbered-list" start="3"><li>Total number of rides and Average ride length by Rideable Type and User Type. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="ceb9ca10-0586-414f-b70b-8cf03e2ce862" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, rideable_type) %&gt;%
-      summarise(total_rides = length(member_casual),
-                percentage = round((length(rideable_type) / nrow(new_cleaned_data)) * 100, digits = 2),
-                average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="8c280aa5-39ef-403b-9865-311a0261a739" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%202.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%202.png"/></a></figure><p id="3564010b-24bd-480d-a9c5-1ba9821c565e" class="">Findings after a few calculations: </p><ul id="48aa10c4-c0ed-41da-9173-43664af4a2dc" class="bulleted-list"><li style="list-style-type:disc">Members accounted for a larger share of the total rides, at 64.6%. </li></ul><ul id="91feff43-e768-4daf-925c-b8a95877c398" class="bulleted-list"><li style="list-style-type:disc">The average ride length for members was 12.2 minutes which was significantly shorter than that of casual riders (23.0 minutes) and the overall average ride length (16.02 minutes). </li></ul><ul id="8f4ed8d3-acec-4963-8186-e0ef52a8e463" class="bulleted-list"><li style="list-style-type:disc">The most popular bike among all users was classic. </li></ul><ul id="2c330503-a64d-4535-a299-669fb7e95307" class="bulleted-list"><li style="list-style-type:disc">Member users were the predominant users of both electric and classic bikes, while docked bikes were not significantly used by either type of user. </li></ul><p id="61a3d8db-78a5-45e3-b6ff-d6df2dcd245d" class="">
-    </p><h2 id="1630705b-0a6e-4a0d-bc31-e3321e17c7b1" class=""><strong>STEP 5: SHARE</strong></h2><p id="0b819e40-a27d-45df-9297-ed33ec86d0d6" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Total Rides and Average Ride Length monthly </strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="7f2e5315-7aff-4246-a965-96e0b7cc84fb" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, month) %&gt;% 
-      summarize(number_of_ride = n()) %&gt;% 
-    
-    ggplot(aes(month, number_of_ride, fill = member_casual)) +
-      geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
-      facet_wrap(~ member_casual) + 
-      geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
-      
-      labs(x = &quot;Month&quot;, y = &quot;Number of Rides&quot;, 
-           title = &quot;Cyclistic - Total Rides (Feb 2023 - Jan 2024)&quot;, 
-           subtitle =  &quot;By Month and User Type&quot;) +
-      scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0, 550000)) +
-      theme_classic(base_size = 10) +
-      coord_flip()
-    
-    ggsave(&quot;Total_Rides_by_Month_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="c04df2ba-2209-410f-8f6d-e730bb96f265" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Total_Rides_by_Month_and_User_Type.png"><img style="width:684px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Total_Rides_by_Month_and_User_Type.png"/></a></figure><p id="33a49dc1-be84-4c59-b106-8b08286f33f6" class="">As can be seen from the graph: </p><ul id="c033dff0-50a2-4ea6-9797-b11b9f6c10ee" class="bulleted-list"><li style="list-style-type:disc"> Member usage consistently exceeded casual usage at every point throughout the year. </li></ul><ul id="6967e1eb-941c-44ce-8acd-650d6b076cc5" class="bulleted-list"><li style="list-style-type:disc">The low season for both user types occurred from December to February of the following year, while the high season was from May to October.</li></ul><ul id="544f3462-59f0-4409-be21-624b12089e3c" class="bulleted-list"><li style="list-style-type:disc">The smallest gap between casual and member rides was in the summer months, which could mean that pleasant weather conditions attract more casual riders. While the biggest gap occurred in the colder months, potentially indicating that casual riders were far more affected by seasonal changes than members.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="fa8f38f4-f9fc-4429-bc04-9f28fdaa731c" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, month) %&gt;% 
-      summarize(average_ride_length = round(mean(ride_length), digits = 2))%&gt;% 
-      
-    ggplot(aes(month,average_ride_length, fill = member_casual)) +
-      geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
-      facet_wrap(~ member_casual) + 
-      geom_text(aes(label = format(average_ride_length, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
-      
-      labs(x = &quot;Month&quot;, y = &quot;Average Ride Length (min)&quot;, 
-           title = &quot;Cyclistic - Average Ride Length (Feb 2023 - Jan 2024)&quot;, 
-           subtitle =  &quot;By Month and User Type&quot;) +
-      scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0,30)) +
-      theme_classic(base_size = 10) + 
-      coord_flip()
-    
-    ggsave(&quot;Average_Ride_Length_by_Month_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="e7e5520c-e1ab-4277-be22-aa71a779f8b7" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Average_Ride_Length_by_Month_and_User_Type.png"><img style="width:2187px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Average_Ride_Length_by_Month_and_User_Type.png"/></a></figure><p id="2b5554db-d16e-4368-a6b1-2cee1c54d217" class="">The graph showed that: </p><ul id="76c721c2-7766-4fae-ac37-4ecdaf62f86c" class="bulleted-list"><li style="list-style-type:disc">Casual riders consistently had longer average ride lengths with significant fluctuations throughout the year compared to members.</li></ul><ul id="c231ac53-f19c-4674-8846-3abcdf37612f" class="bulleted-list"><li style="list-style-type:disc">The gap between the average ride length of casual and member riders narrowed slightly during summer months. It may indicate that members took longer rides in better weather condition, which was similar to casuals, but to a lesser extent. </li></ul><p id="0acd70e5-61af-489c-a892-6db6a273f3d2" class="">
-    </p><p id="15900835-27ca-4fb0-a19b-b3d743b3e18e" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Total Rides and Average Ride Length weekly</strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="0543e90f-f81c-4efe-90d2-c74e3b6421b6" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, day_of_week) %&gt;% 
-      summarize(number_of_ride = n()) %&gt;% 
-    
-    ggplot(aes(factor(day_of_week,levels = c(&quot;Sunday&quot;, &quot;Saturday&quot;, &quot;Friday&quot;, &quot;Thursday&quot;, &quot;Wednesday&quot;, &quot;Tuesday&quot;, &quot;Monday&quot;)), number_of_ride, fill = member_casual)) +
-      geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
-      facet_wrap(~ member_casual) + 
-      geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
-      
-      labs(x = &quot;Day of week&quot;, y = &quot;Number of Rides&quot;, 
-           title = &quot;Cyclistic - Total Rides (Feb 2023 - Jan 2024)&quot;, 
-           subtitle =  &quot;By Day of Week and User Type&quot;) +
-      scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0, 550000)) +
-      theme_classic(base_size = 10) +
-      coord_flip()
-    
-    ggsave(&quot;Total_Rides_by_Day_of_the_Week_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><p id="53fb131d-6180-478a-ab9a-14649a2bdf21" class="">
-    </p><figure id="f279d1a8-214c-4972-87d8-f7821d1c515b" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Total_Rides_by_Day_of_the_Week_and_User_Type.png"><img style="width:2187px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Total_Rides_by_Day_of_the_Week_and_User_Type.png"/></a></figure><p id="858646c9-e8a1-41c8-9682-3579e5814643" class="">Overall, member users consistently outnumbered casual users in total rides on all days, with the narrowest gap was on Saturdays. Members tended to be more active on weekdays, whereas casual users utilized the bikes more frequently on weekends.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="33809aa9-6d89-460a-9f66-b47ef0a6367e" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, day_of_week) %&gt;% 
-      summarize(average_ride_length = round(mean(ride_length), digits = 2))%&gt;% 
-      
-    ggplot(aes(factor(day_of_week,levels = c(&quot;Sunday&quot;,&quot;Saturday&quot;, &quot;Friday&quot;,&quot;Thursday&quot;,&quot;Wednesday&quot;,&quot;Tuesday&quot;,&quot;Monday&quot;)),average_ride_length, fill = member_casual)) +
-      geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
-      facet_wrap(~ member_casual) + 
-      geom_text(aes(label = format(average_ride_length, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
-      
-      labs(x = &quot;Day of week&quot;, y = &quot;Average Ride Length (min)&quot;, 
-           title = &quot;Cyclistic - Average Ride Length (Feb 2023 - Jan 2024)&quot;, 
-           subtitle =  &quot;By Day of Week and User Type&quot;) +
-      scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0,30)) +
-      theme_classic(base_size = 10) + 
-      coord_flip()
-    
-    ggsave(&quot;Average_Ride_Length_by_Day_of_the_Week_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="368e9013-7f98-49ef-8fc9-60ba527085cc" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Average_Ride_Length_by_Day_of_the_Week_and_User_Type.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Average_Ride_Length_by_Day_of_the_Week_and_User_Type.png"/></a></figure><p id="d201592a-d835-4025-a717-edf62bdca8d9" class="">As shown in the graph: </p><ul id="f474e0fe-175a-47ae-a195-1a41ac5f43ac" class="bulleted-list"><li style="list-style-type:disc">The difference between the day with the highest number of rides and the day with the lowest number of rides was particularly pronounced among casual riders.</li></ul><ul id="4408ae85-8a2a-4c40-be00-72c21a88b07f" class="bulleted-list"><li style="list-style-type:disc">Both types had their longest average ride on the weekends. <ul id="06d68f36-86fc-438f-a973-6cd8e673d6e1" class="bulleted-list"><li style="list-style-type:circle">For casual users, Sunday recorded the longest average ride at 26.61 minutes. Notably, although Saturday saw more total rides than Sunday, the average ride length for Saturday riders was shorter compared to Sunday. </li></ul><ul id="4cf92cea-1bd9-4f2d-b6e8-3e944a40bdc1" class="bulleted-list"><li style="list-style-type:circle">For member users, Sunday also had the longest average ride among member users, at 13.66 minutes. Despite Saturday having a higher total number of rides than Sunday, the average ride length for both days was quite similar. </li></ul></li></ul><p id="dcf72ae0-a11f-4add-8adf-8ef4cdaf967a" class="">
-    </p><p id="ea5c159e-6e6c-40ec-ba9b-c32e3f10d122" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Total Rides and Average Ride Length daily</strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="3688c382-e1ee-4dae-b7f6-a29503e162e1" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, hour) %&gt;% 
-      summarize(number_of_ride = n()) %&gt;% 
-    
-    ggplot(aes(hour, number_of_ride, fill = member_casual)) +
-      geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
-      facet_wrap(~ member_casual) + 
-      geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
-      
-      labs(x = &quot;Hour&quot;, y = &quot;Number of Rides&quot;, 
-           title = &quot;Cyclistic - Total Rides (Feb 2023 - Jan 2024)&quot;, 
-           subtitle =  &quot;By Hour and User Type&quot;) +
-      scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0, 350000)) +
-      theme_classic(base_size = 10) +
-      coord_flip()
-    
-    ggsave(&quot;Total_Rides_by_Hour_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="e30d5de0-6a6b-4ac6-8717-3e65666977f9" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Total_Rides_by_Hour_and_User_Type.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Total_Rides_by_Hour_and_User_Type.png"/></a></figure><p id="88f4025a-c238-4fb3-8397-ff8726e4ab54" class="">According to the graph:</p><ul id="7dbdf516-e140-46fe-981f-5df8179da04f" class="bulleted-list"><li style="list-style-type:disc">The total rides of member riders consistently outnumbered casual riders throughout most hours of the day. </li></ul><ul id="ff13b9e7-ac5c-4106-af8b-ddd0c5b097fd" class="bulleted-list"><li style="list-style-type:disc">Both types had similar pattern of peak hours which were between 4 PM and 6 PM. They also experienced a significant drop in total rides during the nighttime hours.</li></ul><ul id="68ab362d-8da1-4eaa-8cd5-727d9bd4d2d1" class="bulleted-list"><li style="list-style-type:disc">Casual rides were more evenly distributed across the midday to evening hours. Their number of rides increased steadily from 10 AM till the afternoon, peaking at 5 PM. </li></ul><ul id="7d11ddf6-7d74-4f88-a0bb-58def70d2244" class="bulleted-list"><li style="list-style-type:disc">Member riders experienced peak hours in the early morning from 7 AM to 8 AM and from late afternoon to early evening (4 - 6 PM), which likely correspond to typical commuting times. The highest number of rides for members occurred at 5 PM, followed by a high total rides at 8 AM.</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2d0c10c1-2e83-4420-a078-d842e2a25015" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, hour) %&gt;% 
-      summarize(average_ride_length = round(mean(ride_length), digits = 2))%&gt;% 
-      
-    ggplot(aes(hour,average_ride_length, fill = member_casual)) +
-      geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
-      facet_wrap(~ member_casual) + 
-      geom_text(aes(label = format(average_ride_length, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
-      
-      labs(x = &quot;Hour&quot;, y = &quot;Average Ride Length (min)&quot;, 
-           title = &quot;Cyclistic - Average Ride Length (Feb 2023 - Jan 2024)&quot;, 
-           subtitle =  &quot;By Hour and User Type&quot;) +
-      scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0,30)) +
-      theme_classic(base_size = 10) + 
-      coord_flip()
-    
-    ggsave(&quot;Average_Ride_Length_by_Hour_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="7c0b66cb-f7f1-49e1-841b-c089873d8df5" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Average_Ride_Length_by_Hour_and_User_Type.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Average_Ride_Length_by_Hour_and_User_Type.png"/></a></figure><p id="7e090e2a-fb4f-4ad3-a3ca-c97b26856b3f" class="">From the graph, it could be noticed that:</p><ul id="750a10ef-1c0f-4044-b262-b6a0a3988998" class="bulleted-list"><li style="list-style-type:disc">The average ride length of casual riders was significantly longer than that of member riders, with the difference being particularly pronounced during midday hours. </li></ul><ul id="4a4b0fd2-5e10-4325-9428-03fe749a1ce2" class="bulleted-list"><li style="list-style-type:disc">For casual users, there is a noticeable increase in ride length during the midday hours, particularly from 10 AM to 3 PM. The longest average rides for casual users occur at 11 AM and 12 PM. </li></ul><ul id="cca93bfb-c419-4f96-9463-3ba511b6d094" class="bulleted-list"><li style="list-style-type:disc">For member users, the average ride lengths were shorter and more consistent throughout the day, fluctuating between 10.23 minutes and 13.14 minutes. </li></ul><p id="6a15b30c-eeaa-4415-9522-0fcd0126a900" class="">
-    </p><p id="5e865b64-256a-47bb-837d-00fe492d1189" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Round-trip and One-way Routes by User Type</strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="4af540d2-198b-4e3b-9cf5-a76b62102d42" class="code"><code class="language-R">final_data %&gt;%
-      group_by(member_casual, round_trip) %&gt;% 
-      summarise(total_rides = length(round_trip),
-                average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="927bb503-2a69-4c83-a248-233695b7799b" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%203.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%203.png"/></a></figure><p id="1de9e737-9ce2-452d-a18e-94da068b0ed3" class="">Findings from the data: </p><ul id="00a2cf04-3f4d-4ebd-842c-4991356d65a4" class="bulleted-list"><li style="list-style-type:disc">The total number of rides on one-way routes was more than round-trip routes for both riders while the average ride length for round-trip routes was longer than for one-way routes. </li></ul><p id="ec7bb82d-b869-4db5-8c22-791e62c4263b" class="">
-    </p><p id="5207bddc-a4c2-4d8f-be48-5c42500013a5" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Top 10 Most Frequent Routes by User Type</strong></span><strong> </strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="15af7099-62de-42c1-a84f-1d0992f701c3" class="code"><code class="language-R">final_data &lt;- final_data %&gt;%
-      mutate(route = paste(start_station_name, &quot;-&gt;&quot;, end_station_name))
-    
-    # group by the new route column, filter for list of top 10 routes 
-    top_routes_member &lt;- final_data %&gt;%
-      filter(member_casual == &quot;member&quot;) %&gt;%
-      group_by(route, member_casual, round_trip) %&gt;%
-      summarize(number_of_ride = n()) %&gt;%
-      ungroup() %&gt;%
-      arrange(desc(number_of_ride)) %&gt;% 
-      slice_max(order_by = number_of_ride, n = 10)
-    
-    # plot the top 10 routes
-    ggplot(top_routes_member, aes(x = reorder(route, number_of_ride), y = number_of_ride, fill = round_trip)) +
-    geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.5) +
-      geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 1.7) + 
-      
-      labs(x = &quot;Route&quot;, y = &quot;Number of Rides&quot;, 
-           title = &quot;Cyclistic - Top 10 Most Frequent Routes&quot;, 
-           subtitle =  &quot;For Member Users&quot;) +
-      scale_fill_manual(values = c(&quot;#c1c1f3&quot;,&quot;#ffd1dc&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0,10000)) +
-      theme_classic(base_size = 10) + 
-      theme(axis.text.y = element_text(size = 6)) + 
-      coord_flip()
-    
-    ggsave(&quot;Top_10_Most_Frequent_Routes_For_Member_Users.png&quot;, plot = last_plot(), dpi = 300)</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="131ab8b3-a31f-4863-aef9-dda6a2a915df" class="code"><code class="language-R">final_data &lt;- final_data %&gt;%
-      mutate(route = paste(start_station_name, &quot;-&gt;&quot;, end_station_name))
-    
-    # group by the new route column, filter for list of top 10 routes 
-    top_routes_member &lt;- final_data %&gt;%
-      filter(member_casual == &quot;casual&quot;) %&gt;%
-      group_by(route, member_casual, round_trip) %&gt;%
-      summarize(number_of_ride = n()) %&gt;%
-      ungroup() %&gt;%
-      arrange(desc(number_of_ride)) %&gt;% 
-      slice_max(order_by = number_of_ride, n = 10)
-    
-    # plot the top 10 routes
-    ggplot(top_routes_member, aes(x = reorder(route, number_of_ride), y = number_of_ride, fill = round_trip)) +
-    geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.5) +
-      geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 1.7) + 
-      
-      labs(x = &quot;Route&quot;, y = &quot;Number of Rides&quot;, 
-           title = &quot;Cyclistic - Top 10 Most Frequent Routes&quot;, 
-           subtitle =  &quot;For Casual Users&quot;) +
-      scale_fill_manual(values = c(&quot;#c1c1f3&quot;,&quot;#ffd1dc&quot;)) +
-      scale_y_continuous(labels = scales::comma_format(), limits = c(0,10000)) +
-      theme_classic(base_size = 10) + 
-      theme(axis.text.y = element_text(size = 6)) + 
-      coord_flip()
-    
-    ggsave(&quot;Top_10_Most_Frequent_Routes_For_Casual_Users.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="045b10d8-274e-4c68-872a-6d78ab7cd2fb" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%204.png"><img style="width:2187px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%204.png"/></a></figure><figure id="262b2b25-d814-4526-8fe1-bf8715d486f2" class="image"><a href="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%205.png"><img style="width:708px" src="Cyclistic-bike-share-analysis%2046446da2df7644d0afd76175312f5919/Untitled%205.png"/></a></figure><p id="6f227e6c-3a19-4d87-b709-92302484fb5d" class="">As can be discovered from the graph of top 10 most frequent routes for each user: </p><ul id="03e53e47-2b29-4c9d-aa68-685517f06bdb" class="bulleted-list"><li style="list-style-type:disc">Round-trip routes were predominant among casual riders, accounting for 7 out of 10 routes. </li></ul><ul id="fd48e7b4-76cf-43ac-8963-f4231789f590" class="bulleted-list"><li style="list-style-type:disc">There was only one common route for both groups, which was from Ellis Ave &amp; 55th St to Ellis Ave &amp; 60 St.</li></ul><ul id="ee97fc27-4687-48f2-9975-e3609058f6da" class="bulleted-list"><li style="list-style-type:disc">Number of rides for member users were more evenly distributed compared to casual riders.<ul id="69abc575-4941-41af-84ac-8bd589d26042" class="bulleted-list"><li style="list-style-type:circle">Member riders ranged from around 2,500 to just over 5,000, with the most frequently used route being a one-way trip. </li></ul><ul id="6018f405-97f0-459d-a1b0-acd35e66b8c6" class="bulleted-list"><li style="list-style-type:circle">Casual riders saw greater variability with the total rides fluctuating from about 2,000 to over 8,000 and the most popular route was a round trip. </li></ul></li></ul><p id="41484ddc-d452-422c-be71-614fb92c960e" class="">
-    </p><p id="00d90f3d-6532-4e30-a046-ec8b29e28430" class=""><strong>Summary </strong></p><p id="0e52f102-e337-44b4-8ee4-9a42711a08a3" class="">Below are some insights and trends I have gained from the analysis that can be useful when design marketing strategies aimed at converting casual riders into annual members. </p><ul id="7547562f-86bd-488e-9a15-7fd9b8faccd5" class="bulleted-list"><li style="list-style-type:disc">The <strong>most popular bike </strong>among all users was <strong>classic</strong>. </li></ul><ul id="362fdfb0-0653-4532-8020-de8d2ea67c14" class="bulleted-list"><li style="list-style-type:disc">The <strong>high season</strong> for both types of users was from <strong>May to October</strong>. </li></ul><ul id="edcc38cf-9d70-47f6-9efa-94cbc643c2da" class="bulleted-list"><li style="list-style-type:disc"><strong>Members</strong> tended to be more active on <strong>weekdays</strong>, whereas <strong>casuals</strong> used the bikes more frequently on <strong>weekends</strong>. </li></ul><ul id="84e56708-ba74-4f80-aff2-07c7e64f1cf9" class="bulleted-list"><li style="list-style-type:disc"><strong>Busiest hours</strong> for both member and user riders were <strong>between 4 PM and 6 PM.</strong></li></ul><ul id="7cd6c495-9534-456f-a2e6-08af5be5ec70" class="bulleted-list"><li style="list-style-type:disc"><strong>Casual users</strong> travelled <strong>longer distance</strong> than members throughout the whole week. The <strong>average ride length </strong>of <strong>casual riders </strong>is <strong>10.8 minutes longer</strong> than members riders. </li></ul><ul id="970bf4ac-b6bd-4337-9248-48ca77272e11" class="bulleted-list"><li style="list-style-type:disc"> The <strong>total rides on one-way routes outnumbered</strong> those for round-trip routes for both types of users. </li></ul><h2 id="5bfe8be8-f9cb-4599-beb9-a6a0c6be6cd4" class=""><strong>STEP 6: ACT </strong></h2><p id="aee1cd49-0683-4cc3-959a-feb68ee76501" class="">Below are my recommendations to help convert the casual riders into annual members. </p><ol type="1" id="75050e14-ac05-4ba7-a6ee-57382c09d3ef" class="numbered-list" start="1"><li>Offering promotional incentives, discount rates or trial memberships during the off-peak season from December to February. </li></ol><ol type="1" id="9d8e442d-90e6-46a5-b1cf-e98b6fb1aa8d" class="numbered-list" start="2"><li>Implementing some exclusive benefits specifically for membership during the peak hours (4 PM - 6 PM) to enhance user experience and satisfaction levels. There are some benefits that can be put into consideration such as priority access during peak hours, discounts on additional services, loyalty points accumulation program, etc. </li></ol><ol type="1" id="fe596f2f-5b2d-49f6-b56f-8136111c3e8e" class="numbered-list" start="3"><li>Launching a marketing campaign aimed at increasing the usage of classic bikes among both casual and member riders.</li></ol><hr id="c5ec24c6-bce7-4ab8-9197-4ef9c3483d21"/><p id="c8a800e5-fe41-4044-9778-a776387980d2" class=""><em>This comes to the end of my first capstone project in data analytics. You can view my full code on my Github for this project </em><em><a href="https://github.com/alitanguyen/Cyclistic-bike-share-analysis/tree/main">here</a></em><em>.  If you have any comments or suggestions, please don&#x27;t hesitate to let me know. Thank you for reading my analysis!</em></p><p id="cedad89b-d85c-4a64-84bf-e9580defe011" class="">
-    </p><p id="75f91d69-9dd7-4442-9be6-3751201f5f33" class="">
-    </p><p id="17697499-dfba-4a32-99f0-dd50c42b7964" class="">
-    </p><p id="d6339ce9-84ec-400a-82be-64b18025258a" class="">
-    </p><p id="7d56961a-480e-42b8-9d67-6cac5210492c" class="">
-    </p><p id="eda422e6-d239-42f4-bb95-872bf249c167" class="">
-    </p><p id="ce00366e-d3ed-4730-a180-3110aab39e98" class="">
-    </p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Cyclistic Bike-share Analysis</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="46446da2-df76-44d0-afd7-6175312f5919" class="page sans"><header><img class="page-cover-image" src="dataset-cover.jpg" style="object-position:center 50%"/><h1 class="page-title">Cyclistic Bike-share Analysis</h1><p class="page-description"></p></header><div class="page-body"><p id="d9a703f2-f1b4-4c3d-94bd-6e8423d70075" class="">This capstone project is the final part of the <a href="https://www.coursera.org/professional-certificates/google-data-analytics">Google Data Analytics Certificate</a> on Cousera. The main objective of this project is for me to demonstrate the skills acquired throughout the course and apply them to real-world scenarios. As a junior data analyst within the marketing analyst team of Cyclistic, a fictional bike-share company, I will go through 6 phases of the data analysis process in this project including <strong>Ask, Prepare, Process, Analyze and Act. </strong><br/><br/></p><nav id="1a8a5b63-f83b-4421-aa83-4697076a3221" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#0b87e668-3e9b-4c4c-8130-f4c4c2347405"><strong>STEP 1: ASK</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#bee4c0b0-53ae-4b44-bb3e-bc8f203090f8"><strong>1.1 Background </strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3739e539-89f5-41c2-87f5-6939e842f1e9"><strong>1.2 Business Task</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#b5aee8e4-0438-4ff3-b3f9-cdf1fae367d2"><strong>1.3 Deliverables</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#c514ce03-202c-44b0-8431-be6395f698cc"><strong>1.4 Key Stakeholders</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#58690241-d372-49d7-bf8e-70cd0b2ae5fd"><strong>STEP 2: PREPARE</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#8673e604-6828-47a1-a511-a75ad71bb569"><strong>STEP 3: PROCESS</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#40ae6ab6-93cd-4133-a447-122b2a18d09b"><strong>3.1. Choosing the tool </strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#6d8d1d3c-c35f-40a1-8a5d-6fd18e0dd824"><strong>3.2. Preparing the environment </strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#9ad7cce4-95ee-4fb7-a6f1-f29b1e288fa8"><strong>3.3 Data cleaning and manipulation </strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e37d6cd0-1d6e-4db5-8e3f-e40a9231462b"><strong>STEP 4: ANALYZE</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#7290d42d-7eee-45c9-b2c2-c285c73c3497"><strong>4.1 Run calculations</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1630705b-0a6e-4a0d-bc31-e3321e17c7b1"><strong>STEP 5: SHARE</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#5bfe8be8-f9cb-4599-beb9-a6a0c6be6cd4"><strong>STEP 6: ACT </strong></a></div></nav><p id="a53d5af9-d8de-4229-ba73-e44ddf1cbf78" class=""><em>Quick Link: </em><a href="https://github.com/alitanguyen/Cyclistic-bike-share-analysis/tree/main">Github R Code</a></p><h2 id="0b87e668-3e9b-4c4c-8130-f4c4c2347405" class=""><strong>STEP 1: ASK</strong></h2><h3 id="bee4c0b0-53ae-4b44-bb3e-bc8f203090f8" class=""><strong>1.1 Background </strong></h3><p id="5a68ef66-e3b3-4d28-a9fb-00b51edd0fab" class="">In 2016, Cyclistic launched a successful bike-share offering. Since then, the program has grown to a  fleet of 5,824 bicycles that are geotracked and locked into a network of 692 stations across Chicago. The bikes can be unlocked from one station and returned to any other station in the system anytime.</p><p id="d3e3d21a-0815-427a-a458-221efdba4701" class="">The director of marketing, Lily Moreno, believes the company’s future success depends on maximizing the number of annual memberships. Moreno believes that targeting casual riders are the key because they are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs. Therefore, our team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, we will design a new marketing strategy to convert casual riders into annual members. </p><h3 id="3739e539-89f5-41c2-87f5-6939e842f1e9" class=""><strong>1.2 Business Task</strong></h3><p id="70eebbce-d31f-42a5-aebc-1e1cf3bc6ff7" class="">How do annual members and casual riders use Cyclistic bikes differently?. </p><h3 id="b5aee8e4-0438-4ff3-b3f9-cdf1fae367d2" class=""><strong>1.3 Deliverables</strong></h3><ol type="1" id="e0a2ff73-a402-44b6-9654-ced912866f53" class="numbered-list" start="1"><li>A clear summary of the business task</li></ol><ol type="1" id="edf54612-a645-47f5-972d-d06434f8a526" class="numbered-list" start="2"><li>A description of all data sources used</li></ol><ol type="1" id="b4f91b8d-0e11-40d0-846e-fca728257ec4" class="numbered-list" start="3"><li>Documentation of any cleaning or manipulation of data</li></ol><ol type="1" id="569d0624-69a8-4a2f-9641-6dbf274594a3" class="numbered-list" start="4"><li>A summary of analysis</li></ol><ol type="1" id="13e6a880-75d4-4cdd-acf8-634652c00f71" class="numbered-list" start="5"><li>Supporting visualizations and key findings</li></ol><ol type="1" id="8855485e-5b7d-4e54-84c5-24c685987c40" class="numbered-list" start="6"><li>Top three recommendations based on the analysis</li></ol><h3 id="c514ce03-202c-44b0-8431-be6395f698cc" class=""><strong>1.4 Key Stakeholders</strong></h3><ol type="1" id="7c4ae4d0-613b-40e3-b8c2-73c70f8a46b5" class="numbered-list" start="1"><li>Lily Moreno: Director of marketing and my manager who is responsible for the development of campaigns and initiatives to promote the bike-share program.</li></ol><ol type="1" id="31b55d68-db2d-4ffa-a6db-08ae5826489a" class="numbered-list" start="2"><li>Cyclistic marketing analytics team: A team of data analysts who are responsible for collecting, analyzing, and reporting data.</li></ol><ol type="1" id="9ae8f0a0-d181-47bb-b6d2-905b07ea593b" class="numbered-list" start="3"><li>Cyclistic executive team: Detail-oriented executive team will decide whether to approve the recommended marketing program.</li></ol><p id="0ba8d3f3-fb26-44be-8116-7dc92070cd46" class="">
+</p><h2 id="58690241-d372-49d7-bf8e-70cd0b2ae5fd" class=""><strong>STEP 2: PREPARE</strong></h2><ol type="1" id="fa7dfd05-890b-4506-b300-2fd8da2e8fe7" class="numbered-list" start="1"><li>The data is publicly available <a href="https://divvy-tripdata.s3.amazonaws.com/index.html"><strong>here</strong></a><strong> </strong>under the<strong> </strong><a href="https://ride.divvybikes.com/data-license-agreement"><strong>license</strong></a><strong> </strong>by Motivate International Inc. It is stored in .csv files. </li></ol><ol type="1" id="a470c612-e75e-4861-b6ac-b2bd5e87b6af" class="numbered-list" start="2"><li>I downloaded the last 12 months of Cyclistic trip data from February 2023 to January 2024 for this project. </li></ol><ol type="1" id="1ab14132-2913-4bbc-b90b-4a7159fb37bf" class="numbered-list" start="3"><li>The data meets the criteria for ROCCC: <strong>R</strong>eliable, <strong>O</strong>riginal, <strong>C</strong>omprehensive, <strong>C</strong>urrent, and <strong>C</strong>ited and there are no issues with bias or credibility. </li></ol><p id="0d306083-96e2-4f5f-8057-04be9f0e2ba5" class="">
+</p><h2 id="8673e604-6828-47a1-a511-a75ad71bb569" class=""><strong>STEP 3: PROCESS</strong></h2><h3 id="40ae6ab6-93cd-4133-a447-122b2a18d09b" class=""><strong>3.1. Choosing the tool </strong></h3><p id="4210a4d5-d11a-47c0-b06f-19f2f570059c" class="">I used R Studio to process the data.</p><p id="c421b356-44eb-440c-ba62-b216e07d4a4f" class="">I also found out that I could not use Excel spreadsheet or Google spreadsheet to process a dataset of <strong>5,674,449</strong> rows after combing all .csv files together. Because Excel spreadsheet has a limit of 1,048,576 rows and 16,384 columns while Google spreadsheet can only process maximum 18,278 columns and 40,000 rows. </p><h3 id="6d8d1d3c-c35f-40a1-8a5d-6fd18e0dd824" class=""><strong>3.2. Preparing the environment </strong></h3><ol type="1" id="f977e694-4dc4-4b52-8cf1-63ddda986284" class="numbered-list" start="1"><li>Loaded needed libraries.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="f30831bb-a2f2-4e1c-9955-bbb0d2bff31b" class="code"><code class="language-R">library(tidyverse)
+library(lubridate)
+library(ggplot2)</code></pre><ol type="1" id="480e38cd-8fac-4e69-8dbf-847b322c2467" class="numbered-list" start="2"><li>Set my working directory and imported 12 .csv files to the environment then assigned each monthly .csv file to its own variable. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="20970c80-6fc3-4c79-b45f-af744032f03b" class="code"><code class="language-R">setwd(&#x27;/Users/9360/Desktop/Data Analytics/Google_Data_Analytics/Capstone_Project/Data&#x27;)
+Feb2023_df &lt;- read.csv(&quot;202302-divvy-tripdata.csv&quot;)
+Mar2023_df &lt;- read.csv(&quot;202303-divvy-tripdata.csv&quot;)
+Apr2023_df &lt;- read.csv(&quot;202304-divvy-tripdata.csv&quot;)
+May2023_df &lt;- read.csv(&quot;202305-divvy-tripdata.csv&quot;)
+Jun2023_df &lt;- read.csv(&quot;202306-divvy-tripdata.csv&quot;)
+Jul2023_df &lt;- read.csv(&quot;202307-divvy-tripdata.csv&quot;)
+Aug2023_df &lt;- read.csv(&quot;202308-divvy-tripdata.csv&quot;)
+Sep2023_df &lt;- read.csv(&quot;202309-divvy-tripdata.csv&quot;)
+Oct2023_df &lt;- read.csv(&quot;202310-divvy-tripdata.csv&quot;)
+Nov2023_df &lt;- read.csv(&quot;202311-divvy-tripdata.csv&quot;)
+Dec2023_df &lt;- read.csv(&quot;202312-divvy-tripdata.csv&quot;)
+Jan2024_df &lt;- read.csv(&quot;202401-divvy-tripdata.csv&quot;)</code></pre><ol type="1" id="842ae078-1333-4924-bcc7-8aae8b11c4ae" class="numbered-list" start="3"><li>Merge all uploaded files into a new data frame named <code>merged_df</code>.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="820ddd7a-a568-4937-aa46-96c625d94a08" class="code"><code class="language-R">merged_df &lt;- rbind(Feb2023_df, Mar2023_df, Apr2023_df, May2023_df, Jun2023_df, Jul2023_df, Aug2023_df, Sep2023_df, Oct2023_df, Nov2023_df, Dec2023_df, Jan2024_df)</code></pre><ol type="1" id="8ffc45f7-b4e7-4ca0-8b61-678df0691418" class="numbered-list" start="4"><li>Removed 12 .csv files to keep the environment organized.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="28c1f62f-36bc-41c1-acb0-2a3117f41514" class="code"><code class="language-R">rm(Feb2023_df, Mar2023_df, Apr2023_df, May2023_df, Jun2023_df, Jul2023_df, Aug2023_df, Sep2023_df, Oct2023_df, Nov2023_df, Dec2023_df, Jan2024_df)</code></pre><ol type="1" id="d61a0a12-16cb-4799-83ae-423211691cca" class="numbered-list" start="5"><li>Saved the data frame as <code>merged_data</code> and got an overview of it</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="ca3bd8ad-79b5-43a5-8f59-29ac74133228" class="code"><code class="language-R">merged_data &lt;- merged_df
+glimpse(merged_data)</code></pre><figure id="e5ca4abe-f64b-4ee6-a270-005859c7b9f9" class="image"><a href="Overview_data_frame.png"><img style="width:1120px" src="Overview_data_frame.png"/></a></figure><p id="cbf4aee2-4292-45ee-961f-dd6b36bd1947" class="">There are <em>13 variables</em> and <em>5,674,449 observations</em> in total. </p><h3 id="9ad7cce4-95ee-4fb7-a6f1-f29b1e288fa8" class=""><strong>3.3 Data cleaning and manipulation </strong></h3><p id="a6458b02-40cb-4e50-a205-41f2c2a16386" class=""><strong>Data Cleaning </strong></p><p id="98d803d9-76ad-4246-9ac5-eb9e31e8e5ae" class="">The following data cleaning was performed: </p><ol type="1" id="8cba62f9-6111-4df6-8de6-1e814c3640fa" class="numbered-list" start="1"><li>Remove duplicate rows. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="683cdd48-853b-427e-8fd5-a9f39b51ad8b" class="code"><code class="language-R">merged_data &lt;- distinct(merged_data)</code></pre><ol type="1" id="aab43385-aa66-44fb-9557-802c8e25be7b" class="numbered-list" start="2"><li>Remove NA values. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a3e397a9-cf63-4974-a07c-e9e06be6744a" class="code"><code class="language-R">merged_data &lt;- na.omit(merged_data)</code></pre><ol type="1" id="cf2a789b-1cf3-46bb-99c6-4fc7eade26e0" class="numbered-list" start="3"><li>Remove rows that has white space or empty string. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="baf00e2b-72a5-4181-b761-9599f9cd3e0e" class="code"><code class="language-R">merged_data &lt;- merged_data[rowSums(sapply(merged_data, function(x) x == &quot;&quot;)) == 0, ]</code></pre><ol type="1" id="bd2bc852-95f6-4d23-90e8-9bc5b399489f" class="numbered-list" start="4"><li>Remove 7 unnecessary columns including ride_id, start_station_id, end_station_id, start_lat, start_lng, end_lat, end_lng.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a0e34916-b966-4c5a-ab12-28f5269302f4" class="code"><code class="language-R">merged_data &lt;- subset(merged_data, select = -c(ride_id, start_station_id, end_station_id, start_lat, start_lng, end_lat, end_lng))</code></pre><p id="f3775669-2c00-42db-8eb6-ede49261d4e0" class="">At the beginning, I encountered difficulties due to the presence of white spaces and empty strings in the data frame. It took me a while to revisit this step and clean the data more carefully. As a result, the total number of rows decreased by 24%, amounting to 1,370,067 rows. Despite the removal of nearly one fourth of the data, the data frame still contained 4 million rows, providing enough data for calculations and visualizations in the next step. </p><ol type="1" id="c43bea31-e628-40db-b253-16512cdaa73e" class="numbered-list" start="5"><li>Save the data frame as <code>cleaned_data</code> and get an overview of it.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="82512eb9-b160-4221-a6da-cdd78865742b" class="code"><code class="language-R">cleaned_data &lt;- merged_data
+View(cleaned_data)</code></pre><p id="482bfe8c-805e-40a1-8243-767d21f20da8" class="">
+</p><p id="91318b78-69ac-4fcf-8d1c-2b75416e89e1" class=""><strong>Data Manipulation </strong></p><p id="f3a8b70d-0acc-477b-a315-27a6be2dabdf" class="">The following data manipulation was performed:</p><ol type="1" id="00294c0d-a7ae-48f1-97ec-de4e27a4467f" class="numbered-list" start="1"><li>Create new column <code>Ride_length</code> that calculates the length of each ride by subtracting <code>started_at</code> column from <code>ended_at</code> column and converts it into minutes.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="89f0d28c-f27d-49b1-b348-8ffe0ef2c554" class="code"><code class="language-R"># create the column
+cleaned_data$ride_length &lt;- difftime(cleaned_data$ended_at, cleaned_data$started_at, units = &#x27;min&#x27;)
+cleaned_data$ride_length &lt;- as.numeric(cleaned_data$ride_length) 
+
+# check the first 5 rows
+head(cleaned_data, 5)</code></pre><ol type="1" id="d6a87fb0-840d-479e-a946-dc9737b3a1d0" class="numbered-list" start="2"><li>Create new column <code>Day_of_week</code> that extracts the day of the week from <code>started_at</code> column. It returns the day of the week in the form as ”Sunday”, “Monday”, etc. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="852737de-008e-4831-9d7a-2c4deb6fd442" class="code"><code class="language-R"># create the column
+cleaned_data$day_of_week &lt;- wday(cleaned_data$started_at, label = TRUE, abbr = FALSE)
+
+# check the first 5 rows
+head(cleaned_data, 5)</code></pre><ol type="1" id="fe14c6a5-0c89-42ea-a424-fcba499835b3" class="numbered-list" start="3"><li>Create new column <code>Month</code> that extracts the month from <code>started_at</code> column. It returns the month in each year, starting from 1, ending at 12. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25665766-d922-4923-baaa-4f43220cac16" class="code"><code class="language-R"># create the column
+cleaned_data$month &lt;- format(as.Date(cleaned_data$started_at), &quot;%m&quot;)
+
+# create the column
+cleaned_data$month &lt;- format(as.Date(cleaned_data$started_at), &quot;%m&quot;)</code></pre><ol type="1" id="a4c49a14-779e-400f-93c8-9f5b8bda2eaa" class="numbered-list" start="4"><li>Create new column <code>Day</code> that extracts the day from <code>started_at</code> column. It returns the day number in each month, starting from 1, ending at 31. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="99bd90f6-3ceb-4ef8-bc40-b095b7ec491d" class="code"><code class="language-R"># create the column
+cleaned_data$day &lt;- format(as.Date(cleaned_data$started_at), &quot;%d&quot;)
+
+# check the first 5 rows
+head(cleaned_data, 5)</code></pre><ol type="1" id="928d8fd5-cabe-44a3-b149-03a6e2357fc5" class="numbered-list" start="5"><li>Create new column <code>Hour</code> that extracts the hour from <code>started_at</code> column. It returns the hour of each day, starting from 0, ending at 23. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="bc4dacec-0ae8-4987-ba51-c814e480ea8b" class="code"><code class="language-R"># create the column
+cleaned_data$hour &lt;- format(as.POSIXct(cleaned_data$started_at), format = &quot;%H&quot;)
+
+# check the first 5 rows
+head(cleaned_data, 5)</code></pre><ol type="1" id="320b8adf-46d3-40c7-b9e3-ebd97e38eaf5" class="numbered-list" start="6"><li>Create new column <code>Round_trip</code> that identifies whether the route is one-way or round-trip by comparing the value of  <code>start_station_name</code> column and <code>end_station_name</code> column. If the start and end station names are the same, it indicates a round-trip route, and the value for the <code>Round_trip</code> column will be &#x27;Yes&#x27;. In contrast, if the start and end station names are different, it indicates a one-way route, and the value for the <code>Round_trip</code> column will be &#x27;No&#x27;.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="4b45354c-ec1e-4e12-9d4f-3c36dfadddff" class="code"><code class="language-R"># create the column
+cleaned_data$round_trip &lt;- ifelse(cleaned_data$start_station_name == cleaned_data$end_station_name, &#x27;Yes&#x27;, &#x27;No&#x27;)
+
+# check the first 5 rows
+head(cleaned_data, 5)</code></pre><p id="1809f1da-cbeb-4a63-8f6a-952cd47ad0c9" class="">
+</p><p id="6c84355f-8dac-4d61-ab35-1b918bffb09d" class="">Once I viewed new data frame, I found out that there are some negative rows in <code>ride_length</code>  column. It means that the ending time is before the starting time which is not appropriate. Those rows should also be removed. </p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="07be799a-1e62-41ff-a48f-4dc80f4b1779" class="code"><code class="language-R">cleaned_data &lt;- cleaned_data %&gt;%
+  filter(ride_length &gt;= 0)  </code></pre><p id="bcb2ed28-9989-4b9c-a37b-dc7172b7e382" class="">
+</p><p id="c07f10e1-40ae-4302-9025-df42507808d3" class="">Saved the the data frame as <code>final_data</code>. </p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="99425da7-fe06-4382-a414-97b11b41cadc" class="code"><code class="language-R">final_data &lt;- cleaned_data</code></pre><p id="e29f25cd-7002-4c8d-b6f4-da4ce7377376" class="">This data frame had <strong>4,297,164 rows</strong> indicating the removal of 1,377,285 rows. </p><p id="c83971ab-e5ce-422e-b976-40d51bf30155" class="">Data cleaning and manipulation is completed. Data is now ready to be analyzed.  </p><h2 id="e37d6cd0-1d6e-4db5-8e3f-e40a9231462b" class=""><strong>STEP 4: ANALYZE</strong></h2><h3 id="7290d42d-7eee-45c9-b2c2-c285c73c3497" class=""><strong>4.1 Run calculations</strong></h3><ol type="1" id="11596566-347a-4b12-a2fa-6ee34df40286" class="numbered-list" start="1"><li>Total number of rides and Average ride length.</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="d8a624da-9544-4942-b22a-5eec5fcda5c5" class="code"><code class="language-R">final_data %&gt;%
+ summarize(total_rides = nrow(final_data),average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="82927ab7-3983-4b03-9be2-b044d143f927" class="image"><a href="Total_Rides_and_Average_Ride_Length.png"><img style="width:670px" src="Total_Rides_and_Average_Ride_Length.png"/></a></figure><ol type="1" id="f2bd8191-d5e7-4666-9d5a-7dd6f371e12b" class="numbered-list" start="2"><li>Total number of rides and Average ride length by User Type. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="8c6d6109-12ff-47f2-9f0f-cde7a18a4d7a" class="code"><code class="language-R">final_data %&gt;%
+group_by(member_casual) %&gt;%
+summarise(total_rides = length(member_casual),
+percentage = round((length(member_casual) / nrow(final_data)) * 100, digits = 2),
+average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="247f437a-fbe6-427c-b1d5-c97ddffe3d56" class="image"><a href="Total_Rides_and_Average_Ride_Length_by_User_Type.png"><img style="width:708px" src="Total_Rides_and_Average_Ride_Length_by_User_Type.png"/></a></figure><ol type="1" id="03705060-cbfb-4cda-a01a-100613ece9d4" class="numbered-list" start="3"><li>Total number of rides and Average ride length by Rideable Type and User Type. </li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="ceb9ca10-0586-414f-b70b-8cf03e2ce862" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, rideable_type) %&gt;%
+  summarise(total_rides = length(member_casual),
+            percentage = round((length(rideable_type) / nrow(new_cleaned_data)) * 100, digits = 2),
+            average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="b2cfa867-1e57-461a-bb3c-b04f043edbaa" class="image"><a href="Total_Rides_and_Average_Ride_Length_by_Rideable_Type_and_User_Type.png"><img style="width:708px" src="Total_Rides_and_Average_Ride_Length_by_Rideable_Type_and_User_Type.png"/></a></figure><p id="3564010b-24bd-480d-a9c5-1ba9821c565e" class="">Findings after a few calculations: </p><ul id="48aa10c4-c0ed-41da-9173-43664af4a2dc" class="bulleted-list"><li style="list-style-type:disc">Members accounted for a larger share of the total rides, at 64.6%. </li></ul><ul id="91feff43-e768-4daf-925c-b8a95877c398" class="bulleted-list"><li style="list-style-type:disc">The average ride length for members was 12.2 minutes which was significantly shorter than that of casual riders (23.0 minutes) and the overall average ride length (16.02 minutes). </li></ul><ul id="8f4ed8d3-acec-4963-8186-e0ef52a8e463" class="bulleted-list"><li style="list-style-type:disc">The most popular bike among all users was classic. </li></ul><ul id="2c330503-a64d-4535-a299-669fb7e95307" class="bulleted-list"><li style="list-style-type:disc">Member users were the predominant users of both electric and classic bikes, while docked bikes were not significantly used by either type of user. </li></ul><p id="61a3d8db-78a5-45e3-b6ff-d6df2dcd245d" class="">
+</p><h2 id="1630705b-0a6e-4a0d-bc31-e3321e17c7b1" class=""><strong>STEP 5: SHARE</strong></h2><p id="0b819e40-a27d-45df-9297-ed33ec86d0d6" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Total Rides and Average Ride Length monthly </strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="7f2e5315-7aff-4246-a965-96e0b7cc84fb" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, month) %&gt;% 
+  summarize(number_of_ride = n()) %&gt;% 
+
+ggplot(aes(month, number_of_ride, fill = member_casual)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
+  facet_wrap(~ member_casual) + 
+  geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
+  
+  labs(x = &quot;Month&quot;, y = &quot;Number of Rides&quot;, 
+       title = &quot;Cyclistic - Total Rides (Feb 2023 - Jan 2024)&quot;, 
+       subtitle =  &quot;By Month and User Type&quot;) +
+  scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0, 550000)) +
+  theme_classic(base_size = 10) +
+  coord_flip()
+
+ggsave(&quot;Total_Rides_by_Month_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="c04df2ba-2209-410f-8f6d-e730bb96f265" class="image"><a href="Total_Rides_by_Month_and_User_Type.png"><img style="width:684px" src="Total_Rides_by_Month_and_User_Type.png"/></a></figure><p id="33a49dc1-be84-4c59-b106-8b08286f33f6" class="">As can be seen from the graph: </p><ul id="c033dff0-50a2-4ea6-9797-b11b9f6c10ee" class="bulleted-list"><li style="list-style-type:disc"> Member usage consistently exceeded casual usage at every point throughout the year. </li></ul><ul id="6967e1eb-941c-44ce-8acd-650d6b076cc5" class="bulleted-list"><li style="list-style-type:disc">The low season for both user types occurred from December to February of the following year, while the high season was from May to October.</li></ul><ul id="544f3462-59f0-4409-be21-624b12089e3c" class="bulleted-list"><li style="list-style-type:disc">The smallest gap between casual and member rides was in the summer months, which could mean that pleasant weather conditions attract more casual riders. While the biggest gap was in the colder months, potentially indicating that casual riders were far more affected by seasonal changes than members.</li></ul><p id="3e2dbad6-f7c8-43d0-b1a0-58c2907acae3" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="fa8f38f4-f9fc-4429-bc04-9f28fdaa731c" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, month) %&gt;% 
+  summarize(average_ride_length = round(mean(ride_length), digits = 2))%&gt;% 
+  
+ggplot(aes(month,average_ride_length, fill = member_casual)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
+  facet_wrap(~ member_casual) + 
+  geom_text(aes(label = format(average_ride_length, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
+  
+  labs(x = &quot;Month&quot;, y = &quot;Average Ride Length (min)&quot;, 
+       title = &quot;Cyclistic - Average Ride Length (Feb 2023 - Jan 2024)&quot;, 
+       subtitle =  &quot;By Month and User Type&quot;) +
+  scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0,30)) +
+  theme_classic(base_size = 10) + 
+  coord_flip()
+
+ggsave(&quot;Average_Ride_Length_by_Month_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="e7e5520c-e1ab-4277-be22-aa71a779f8b7" class="image"><a href="Average_Ride_Length_by_Month_and_User_Type.png"><img style="width:2187px" src="Average_Ride_Length_by_Month_and_User_Type.png"/></a></figure><p id="2b5554db-d16e-4368-a6b1-2cee1c54d217" class="">The graph showed that: </p><ul id="76c721c2-7766-4fae-ac37-4ecdaf62f86c" class="bulleted-list"><li style="list-style-type:disc">Casual riders consistently had longer average ride lengths with significant fluctuations throughout the year compared to members.</li></ul><ul id="c231ac53-f19c-4674-8846-3abcdf37612f" class="bulleted-list"><li style="list-style-type:disc">The gap between the average ride length of casual and member riders narrowed slightly during summer months. It may indicate that members took longer rides in better weather condition, which was similar to casuals, but to a lesser extent. </li></ul><p id="0acd70e5-61af-489c-a892-6db6a273f3d2" class="">
+</p><p id="15900835-27ca-4fb0-a19b-b3d743b3e18e" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Total Rides and Average Ride Length weekly</strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="0543e90f-f81c-4efe-90d2-c74e3b6421b6" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, day_of_week) %&gt;% 
+  summarize(number_of_ride = n()) %&gt;% 
+
+ggplot(aes(factor(day_of_week,levels = c(&quot;Sunday&quot;, &quot;Saturday&quot;, &quot;Friday&quot;, &quot;Thursday&quot;, &quot;Wednesday&quot;, &quot;Tuesday&quot;, &quot;Monday&quot;)), number_of_ride, fill = member_casual)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
+  facet_wrap(~ member_casual) + 
+  geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
+  
+  labs(x = &quot;Day of week&quot;, y = &quot;Number of Rides&quot;, 
+       title = &quot;Cyclistic - Total Rides (Feb 2023 - Jan 2024)&quot;, 
+       subtitle =  &quot;By Day of Week and User Type&quot;) +
+  scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0, 550000)) +
+  theme_classic(base_size = 10) +
+  coord_flip()
+
+ggsave(&quot;Total_Rides_by_Day_of_the_Week_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><p id="53fb131d-6180-478a-ab9a-14649a2bdf21" class="">
+</p><figure id="f279d1a8-214c-4972-87d8-f7821d1c515b" class="image"><a href="919/Total_Rides_by_Day_of_the_Week_and_User_Type.png"><img style="width:2187px" src="Total_Rides_by_Day_of_the_Week_and_User_Type.png"/></a></figure><p id="858646c9-e8a1-41c8-9682-3579e5814643" class="">Overall, member users consistently outnumbered casual users in total rides, with the narrowest gap on Saturdays. Members tended to be more active on weekdays while casual users used the bikes more frequently on weekends.</p><p id="847b5e16-bcb9-4ab5-9a5c-1fdee5982554" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="33809aa9-6d89-460a-9f66-b47ef0a6367e" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, day_of_week) %&gt;% 
+  summarize(average_ride_length = round(mean(ride_length), digits = 2))%&gt;% 
+  
+ggplot(aes(factor(day_of_week,levels = c(&quot;Sunday&quot;,&quot;Saturday&quot;, &quot;Friday&quot;,&quot;Thursday&quot;,&quot;Wednesday&quot;,&quot;Tuesday&quot;,&quot;Monday&quot;)),average_ride_length, fill = member_casual)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
+  facet_wrap(~ member_casual) + 
+  geom_text(aes(label = format(average_ride_length, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
+  
+  labs(x = &quot;Day of week&quot;, y = &quot;Average Ride Length (min)&quot;, 
+       title = &quot;Cyclistic - Average Ride Length (Feb 2023 - Jan 2024)&quot;, 
+       subtitle =  &quot;By Day of Week and User Type&quot;) +
+  scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0,30)) +
+  theme_classic(base_size = 10) + 
+  coord_flip()
+
+ggsave(&quot;Average_Ride_Length_by_Day_of_the_Week_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="368e9013-7f98-49ef-8fc9-60ba527085cc" class="image"><a href="Average_Ride_Length_by_Day_of_the_Week_and_User_Type.png"><img style="width:708px" src="Average_Ride_Length_by_Day_of_the_Week_and_User_Type.png"/></a></figure><p id="d201592a-d835-4025-a717-edf62bdca8d9" class="">As shown in the graph: </p><ul id="f474e0fe-175a-47ae-a195-1a41ac5f43ac" class="bulleted-list"><li style="list-style-type:disc">The difference between the day with the highest and lowest number of rides was particularly pronounced among casual riders.</li></ul><ul id="4408ae85-8a2a-4c40-be00-72c21a88b07f" class="bulleted-list"><li style="list-style-type:disc">Both types had their longest average ride on the weekends. <ul id="06d68f36-86fc-438f-a973-6cd8e673d6e1" class="bulleted-list"><li style="list-style-type:circle">For casual users, Sunday recorded the longest average ride at 26.61 minutes. Although Saturday had more riders than Sunday, the average ride length on Saturday was shorter than on Sunday. </li></ul><ul id="4cf92cea-1bd9-4f2d-b6e8-3e944a40bdc1" class="bulleted-list"><li style="list-style-type:circle">For member users, Sunday also had the longest average ride at 13.66 minutes. Even though Saturday had higher total rides than Sunday, the average ride length for both days was quite similar. </li></ul></li></ul><p id="dcf72ae0-a11f-4add-8adf-8ef4cdaf967a" class="">
+</p><p id="ea5c159e-6e6c-40ec-ba9b-c32e3f10d122" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Total Rides and Average Ride Length daily</strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="3688c382-e1ee-4dae-b7f6-a29503e162e1" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, hour) %&gt;% 
+  summarize(number_of_ride = n()) %&gt;% 
+
+ggplot(aes(hour, number_of_ride, fill = member_casual)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
+  facet_wrap(~ member_casual) + 
+  geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
+  
+  labs(x = &quot;Hour&quot;, y = &quot;Number of Rides&quot;, 
+       title = &quot;Cyclistic - Total Rides (Feb 2023 - Jan 2024)&quot;, 
+       subtitle =  &quot;By Hour and User Type&quot;) +
+  scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0, 350000)) +
+  theme_classic(base_size = 10) +
+  coord_flip()
+
+ggsave(&quot;Total_Rides_by_Hour_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="e30d5de0-6a6b-4ac6-8717-3e65666977f9" class="image"><a href="Total_Rides_by_Hour_and_User_Type.png"><img style="width:708px" src="Total_Rides_by_Hour_and_User_Type.png"/></a></figure><p id="88f4025a-c238-4fb3-8397-ff8726e4ab54" class="">According to the graph:</p><ul id="7dbdf516-e140-46fe-981f-5df8179da04f" class="bulleted-list"><li style="list-style-type:disc">The total rides of member riders consistently outnumbered casual riders throughout most hours of the day. </li></ul><ul id="ff13b9e7-ac5c-4106-af8b-ddd0c5b097fd" class="bulleted-list"><li style="list-style-type:disc">Both types had similar pattern of peak hours which were between 4 PM and 6 PM. They also experienced a significant drop in total rides during the nighttime hours.</li></ul><ul id="68ab362d-8da1-4eaa-8cd5-727d9bd4d2d1" class="bulleted-list"><li style="list-style-type:disc">Casual rides were more evenly distributed across the midday to evening hours. Their number of rides increased steadily from 10 AM till the afternoon, peaking at 5 PM. </li></ul><ul id="7d11ddf6-7d74-4f88-a0bb-58def70d2244" class="bulleted-list"><li style="list-style-type:disc">Member riders experienced peak hours in the early morning from 7 AM to 8 AM and from late afternoon to early evening (4 - 6 PM), which likely correspond to typical commuting times. </li></ul><p id="0eba8be8-3ed5-48ef-b5b8-c4404fbf4320" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2d0c10c1-2e83-4420-a078-d842e2a25015" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, hour) %&gt;% 
+  summarize(average_ride_length = round(mean(ride_length), digits = 2))%&gt;% 
+  
+ggplot(aes(hour,average_ride_length, fill = member_casual)) +
+  geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.7) +
+  facet_wrap(~ member_casual) + 
+  geom_text(aes(label = format(average_ride_length, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 2.0) + 
+  
+  labs(x = &quot;Hour&quot;, y = &quot;Average Ride Length (min)&quot;, 
+       title = &quot;Cyclistic - Average Ride Length (Feb 2023 - Jan 2024)&quot;, 
+       subtitle =  &quot;By Hour and User Type&quot;) +
+  scale_fill_manual(values = c(&quot;#de6e56&quot;,&quot;#0b3c5d&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0,30)) +
+  theme_classic(base_size = 10) + 
+  coord_flip()
+
+ggsave(&quot;Average_Ride_Length_by_Hour_and_User_Type.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="7c0b66cb-f7f1-49e1-841b-c089873d8df5" class="image"><a href="Average_Ride_Length_by_Hour_and_User_Type.png"><img style="width:708px" src="Average_Ride_Length_by_Hour_and_User_Type.png"/></a></figure><p id="7e090e2a-fb4f-4ad3-a3ca-c97b26856b3f" class="">From the graph, it could be noticed that:</p><ul id="750a10ef-1c0f-4044-b262-b6a0a3988998" class="bulleted-list"><li style="list-style-type:disc">The average ride length of casual riders was significantly longer than that of member riders, with the difference being particularly pronounced during midday hours. </li></ul><ul id="4a4b0fd2-5e10-4325-9428-03fe749a1ce2" class="bulleted-list"><li style="list-style-type:disc">For casual users, there was a noticeable increase in ride length during the midday hours, particularly from 10 AM to 3 PM. </li></ul><ul id="cca93bfb-c419-4f96-9463-3ba511b6d094" class="bulleted-list"><li style="list-style-type:disc">For member users, the average ride length was shorter and more consistent throughout the day, fluctuating between 10.23 minutes and 13.14 minutes. </li></ul><p id="6a15b30c-eeaa-4415-9522-0fcd0126a900" class="">
+</p><p id="5e865b64-256a-47bb-837d-00fe492d1189" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Round-trip and One-way Routes by User Type</strong></span></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="4af540d2-198b-4e3b-9cf5-a76b62102d42" class="code"><code class="language-R">final_data %&gt;%
+  group_by(member_casual, round_trip) %&gt;% 
+  summarise(total_rides = length(round_trip),
+            average_ride_length = round(mean(ride_length), digits = 2))</code></pre><figure id="d25e0035-486f-487d-b859-3ab150ee660c" class="image"><a href="Total_Rides_and_Average_Ride_Length_Round_trip_One_way_Routes_by_User_Type.png"><img style="width:708px" src="Total_Rides_and_Average_Ride_Length_Round_trip_One_way_Routes_by_User_Type.png"/></a></figure><p id="1de9e737-9ce2-452d-a18e-94da068b0ed3" class="">Findings from the data: </p><ul id="00a2cf04-3f4d-4ebd-842c-4991356d65a4" class="bulleted-list"><li style="list-style-type:disc">The total number of rides on one-way routes was more than round-trip routes for both riders while the average ride length for round-trip routes was longer than for one-way routes. </li></ul><p id="ec7bb82d-b869-4db5-8c22-791e62c4263b" class="">
+</p><p id="5207bddc-a4c2-4d8f-be48-5c42500013a5" class=""><span style="border-bottom:0.05em solid"><strong>Analysis of Top 10 Most Frequent Routes by User Type</strong></span><strong> </strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="131ab8b3-a31f-4863-aef9-dda6a2a915df" class="code"><code class="language-R">final_data &lt;- final_data %&gt;%
+  mutate(route = paste(start_station_name, &quot;-&gt;&quot;, end_station_name))
+
+# group by the new route column, filter for list of top 10 routes 
+top_routes_member &lt;- final_data %&gt;%
+  filter(member_casual == &quot;casual&quot;) %&gt;%
+  group_by(route, member_casual, round_trip) %&gt;%
+  summarize(number_of_ride = n()) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(number_of_ride)) %&gt;% 
+  slice_max(order_by = number_of_ride, n = 10)
+
+# plot the top 10 routes
+ggplot(top_routes_member, aes(x = reorder(route, number_of_ride), y = number_of_ride, fill = round_trip)) +
+geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.5) +
+  geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 1.7) + 
+  
+  labs(x = &quot;Route&quot;, y = &quot;Number of Rides&quot;, 
+       title = &quot;Cyclistic - Top 10 Most Frequent Routes&quot;, 
+       subtitle =  &quot;For Casual Users&quot;) +
+  scale_fill_manual(values = c(&quot;#c1c1f3&quot;,&quot;#ffd1dc&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0,10000)) +
+  theme_classic(base_size = 10) + 
+  theme(axis.text.y = element_text(size = 6)) + 
+  coord_flip()
+
+ggsave(&quot;Top_10_Most_Frequent_Routes_For_Casual_Users.png&quot;, plot = last_plot(), dpi = 300)</code></pre><p id="ff16fc23-1e3a-4add-a17d-f63b3452a666" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="15af7099-62de-42c1-a84f-1d0992f701c3" class="code"><code class="language-R">final_data &lt;- final_data %&gt;%
+  mutate(route = paste(start_station_name, &quot;-&gt;&quot;, end_station_name))
+
+# group by the new route column, filter for list of top 10 routes 
+top_routes_member &lt;- final_data %&gt;%
+  filter(member_casual == &quot;member&quot;) %&gt;%
+  group_by(route, member_casual, round_trip) %&gt;%
+  summarize(number_of_ride = n()) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(number_of_ride)) %&gt;% 
+  slice_max(order_by = number_of_ride, n = 10)
+
+# plot the top 10 routes
+ggplot(top_routes_member, aes(x = reorder(route, number_of_ride), y = number_of_ride, fill = round_trip)) +
+geom_bar(stat = &quot;identity&quot;, position = position_dodge(preserve = &#x27;single&#x27;), width = 0.5) +
+  geom_text(aes(label = format(number_of_ride, big.mark = &quot;,&quot;)), position = position_dodge(width = 0.7), hjust = -0.1, size = 1.7) + 
+  
+  labs(x = &quot;Route&quot;, y = &quot;Number of Rides&quot;, 
+       title = &quot;Cyclistic - Top 10 Most Frequent Routes&quot;, 
+       subtitle =  &quot;For Member Users&quot;) +
+  scale_fill_manual(values = c(&quot;#c1c1f3&quot;,&quot;#ffd1dc&quot;)) +
+  scale_y_continuous(labels = scales::comma_format(), limits = c(0,10000)) +
+  theme_classic(base_size = 10) + 
+  theme(axis.text.y = element_text(size = 6)) + 
+  coord_flip()
+
+ggsave(&quot;Top_10_Most_Frequent_Routes_For_Member_Users.png&quot;, plot = last_plot(), dpi = 300)</code></pre><figure id="045b10d8-274e-4c68-872a-6d78ab7cd2fb" class="image"><a href="Top_10_Most_Frequent_Routes_For_Member_Users"><img style="width:2187px" src="Top_10_Most_Frequent_Routes_For_Casual_Users.png"/></a></figure><figure id="262b2b25-d814-4526-8fe1-bf8715d486f2" class="image"><a href="Top_10_Most_Frequent_Routes_For_Casual_Users.png"><img style="width:708px" src="Top_10_Most_Frequent_Routes_For_Member_Users.png"/></a></figure><p id="6f227e6c-3a19-4d87-b709-92302484fb5d" class="">As can be discovered from the graph of top 10 most frequent routes for each user: </p><ul id="03e53e47-2b29-4c9d-aa68-685517f06bdb" class="bulleted-list"><li style="list-style-type:disc">Round-trip routes were predominant among casual riders, accounting for 7 out of 10 routes. </li></ul><ul id="fd48e7b4-76cf-43ac-8963-f4231789f590" class="bulleted-list"><li style="list-style-type:disc">There was only one common route for both groups, which was from <em>Ellis Ave &amp; 55th St to Ellis Ave &amp; 60 St.</em></li></ul><ul id="ee97fc27-4687-48f2-9975-e3609058f6da" class="bulleted-list"><li style="list-style-type:disc">Number of rides for member users were more evenly distributed compared to casual riders.<ul id="69abc575-4941-41af-84ac-8bd589d26042" class="bulleted-list"><li style="list-style-type:circle">Member riders ranged from around 2,500 to just over 5,000, with the most frequently used route being a one-way trip. </li></ul><ul id="6018f405-97f0-459d-a1b0-acd35e66b8c6" class="bulleted-list"><li style="list-style-type:circle">Casual riders saw greater variability with the total rides fluctuating from about 2,000 to over 8,000 and the most popular route was a round trip. </li></ul></li></ul><p id="41484ddc-d452-422c-be71-614fb92c960e" class="">
+</p><p id="00d90f3d-6532-4e30-a046-ec8b29e28430" class=""><strong>Summary </strong></p><p id="0e52f102-e337-44b4-8ee4-9a42711a08a3" class="">Below are some insights and trends I have gained from the analysis that can be useful when design marketing strategies aimed at converting casual riders into annual members. </p><ul id="7547562f-86bd-488e-9a15-7fd9b8faccd5" class="bulleted-list"><li style="list-style-type:disc">The <strong>most popular bike </strong>among all users was <strong>classic</strong>. </li></ul><ul id="362fdfb0-0653-4532-8020-de8d2ea67c14" class="bulleted-list"><li style="list-style-type:disc">The <strong>high season</strong> for <strong>both types of users</strong> was from <strong>May to October</strong>. </li></ul><ul id="edcc38cf-9d70-47f6-9efa-94cbc643c2da" class="bulleted-list"><li style="list-style-type:disc"><strong>Members</strong> tended to be more active on <strong>weekdays</strong>, whereas <strong>casuals</strong> used the bikes more frequently on <strong>weekends</strong>. </li></ul><ul id="84e56708-ba74-4f80-aff2-07c7e64f1cf9" class="bulleted-list"><li style="list-style-type:disc"><strong>Busiest hours</strong> for <strong>both member and user </strong>riders were <strong>between 4 PM and 6 PM.</strong></li></ul><ul id="7cd6c495-9534-456f-a2e6-08af5be5ec70" class="bulleted-list"><li style="list-style-type:disc"><strong>Casual users</strong> <strong>travelled longer distance</strong> than members throughout the whole week. The average ride length of casual riders was 10.8 minutes longer than members riders. </li></ul><ul id="970bf4ac-b6bd-4337-9248-48ca77272e11" class="bulleted-list"><li style="list-style-type:disc"> The <strong>total rides on one-way routes outnumbered</strong> those for round-trip routes for <strong>both types of users</strong>. </li></ul><h2 id="5bfe8be8-f9cb-4599-beb9-a6a0c6be6cd4" class=""><strong>STEP 6: ACT </strong></h2><p id="aee1cd49-0683-4cc3-959a-feb68ee76501" class="">Below are my recommendations to help convert the casual riders into annual members. </p><ol type="1" id="75050e14-ac05-4ba7-a6ee-57382c09d3ef" class="numbered-list" start="1"><li>Offering promotional incentives, discount rates or trial memberships during the off-peak season from December to February. </li></ol><ol type="1" id="9d8e442d-90e6-46a5-b1cf-e98b6fb1aa8d" class="numbered-list" start="2"><li>Implementing some exclusive benefits specifically for membership during the peak hours (4 PM - 6 PM) to enhance user experience and satisfaction levels. There are some benefits that can be put into consideration such as priority access during peak hours, discounts on additional services, loyalty points accumulation program, etc. </li></ol><ol type="1" id="fe596f2f-5b2d-49f6-b56f-8136111c3e8e" class="numbered-list" start="3"><li>Launching a marketing campaign aimed at increasing the usage of classic bikes among both casual and member riders.</li></ol><hr id="c5ec24c6-bce7-4ab8-9197-4ef9c3483d21"/><p id="c8a800e5-fe41-4044-9778-a776387980d2" class=""><em>This comes to the end of my first capstone project in data analytics. You can view my full code on my Github for this project </em><em><a href="https://github.com/alitanguyen/Cyclistic-bike-share-analysis/tree/main">here</a></em><em>.  </em></p><p id="7069acc7-88ad-41bb-b621-dc11fd29a96b" class=""><em>If you have any comments or suggestions, please don&#x27;t hesitate to let me know. Thank you for reading my analysis!</em></p><p id="cedad89b-d85c-4a64-84bf-e9580defe011" class="">
+</p><p id="75f91d69-9dd7-4442-9be6-3751201f5f33" class="">
+</p><p id="17697499-dfba-4a32-99f0-dd50c42b7964" class="">
+</p><p id="d6339ce9-84ec-400a-82be-64b18025258a" class="">
+</p><p id="7d56961a-480e-42b8-9d67-6cac5210492c" class="">
+</p><p id="eda422e6-d239-42f4-bb95-872bf249c167" class="">
+</p><p id="ce00366e-d3ed-4730-a180-3110aab39e98" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
